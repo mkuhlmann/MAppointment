@@ -24,14 +24,16 @@ class Migration_20211916_Initial implements MigrationInterface {
 			
 			CREATE TABLE appointment_slots(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
-				`total` int NOT NULL,
-				`date` datetime,
+				`slots` int NOT NULL,
+				`free` int NOT NULL,
+				`date` datetime NOT NULL,
+				`duration` int NOT NULL,
 				`created_at` datetime,
 				`updated_at` datetime,
 				`appointment_id` varchar(21) NOT NULL REFERENCES appointments (`id`)
 			);
 			
-			CREATE TABLE appointment_slot_booking(
+			CREATE TABLE appointment_slot_bookings(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`secret` varchar(32) NOT NULL,
 				`firstname` varchar(255),

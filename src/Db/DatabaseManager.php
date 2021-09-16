@@ -19,7 +19,9 @@ class DatabaseManager {
 	{
 		$this->app = $app;
 		$this->db = \ParagonIE\EasyDB\Factory::fromArray([
-			'sqlite:' . $app->path('/data/database.sqlite')
+			'mysql:host=captain.fra02.mkuhlmann.org;port=42306;dbname=appointments',
+			'root',
+			'jmFKGdu6dRb3o7zbep'
 		]);
 	}
 

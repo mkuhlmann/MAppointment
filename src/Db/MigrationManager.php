@@ -57,7 +57,7 @@ class MigrationManager {
 
 	private function ensureMigrationTable() {
 		if(!$this->tableExists($this->pdo, $this->migrationTableName)) {
-			$this->pdo->exec("CREATE TABLE IF NOT EXISTS {$this->migrationTableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(255) NOT NULL, class_name VARCHAR(255) NOT NULL, created_unix INTEGER NOT NULL)");
+			$this->pdo->exec("CREATE TABLE IF NOT EXISTS {$this->migrationTableName} (id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL, class_name VARCHAR(255) NOT NULL, created_unix INTEGER NOT NULL)");
 		}
 	}
 
