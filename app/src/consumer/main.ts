@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import { createRouter, createWebHistory } from 'vue-router';
+import dayjs from 'dayjs';
+import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
 
@@ -23,9 +25,15 @@ const routes = [
     }
 ];
 
-createApp(App)
+dayjs.locale('de');
+
+const app = createApp(App);
+app
     .use(createRouter({
         history: createWebHistory((import.meta.env.MODE == 'development') ? '/app/' : '/'),
         routes,
     }))
     .mount('#app');
+
+app.provide('$isMobileScreen', screen.width <= 760);
+app.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

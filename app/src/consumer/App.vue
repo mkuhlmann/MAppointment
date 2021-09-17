@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, inject } from 'vue';
 import { darkTheme, NConfigProvider, NCard, NLayout, NSpace, NSteps, NStep } from 'naive-ui';
 
+const $isDarkMode = inject<boolean>('$isDarkMode');
 const step = ref(1);
 </script>
 
 <template>
-	<n-config-provider :theme="darkTheme">
+	<n-config-provider :theme="($isDarkMode) ? darkTheme : null">
 		<n-layout position="absolute">
 			<div class="page-container">
 				<router-view></router-view>

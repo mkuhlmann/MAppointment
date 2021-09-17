@@ -7,6 +7,8 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "dayjs": "^1.10.7",
+    "v-calendar": "^3.0.0-alpha.5",
     "vfonts": "^0.1.0",
     "vue": "^3.2.6",
     "vue-router": "^4.0.11"
