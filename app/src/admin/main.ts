@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import dayjs from 'dayjs';
 import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
@@ -9,7 +9,7 @@ import 'vfonts/FiraCode.css'
 import IndexComponent from '../consumer/components/Index.vue';
 import LoginComponent from './components/Login.vue';
 
-const routes = [
+const routes : RouteRecordRaw[] = [
 	{
 		path: '/404',
 		name: 'NotFound',
@@ -19,7 +19,13 @@ const routes = [
         path: '/login',
         name: 'Login',
         component: LoginComponent
-    }
+    },
+	{
+		path: '/',
+		redirect: () => {
+			return { path: '/login' }
+		}
+	}
 ];
 
 dayjs.locale('de');
