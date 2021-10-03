@@ -1,21 +1,27 @@
 <script lang="ts" setup>
-import { defineComponent } from 'vue';
+import { defineComponent, ref, inject } from 'vue';
+import { darkTheme, NConfigProvider, NCard, NLayout, NSpace, NSteps, NStep } from 'naive-ui';
 
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
+const $isDarkMode = true || inject<boolean>('$isDarkMode');
+const useDarkMode = ($isDarkMode) ? darkTheme : null;
+const step = ref(1);
 </script>
 
 <template>
-Hallo from Admin
+	<n-config-provider :theme="useDarkMode">
+		<n-layout position="absolute">
+			<div class="page-container">
+				<router-view></router-view>
+			</div>
+		</n-layout>		
+	</n-config-provider>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.page-container {
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 </style>
