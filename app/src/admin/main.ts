@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import App from './App.vue'
 import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import App from './App.vue';
 import dayjs from 'dayjs';
 import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
@@ -9,7 +9,7 @@ import 'vfonts/FiraCode.css'
 import IndexComponent from '../consumer/components/Index.vue';
 import LoginComponent from './components/Login.vue';
 
-const routes : RouteRecordRaw[] = [
+const routes: RouteRecordRaw[] = [
 	{
 		path: '/404',
 		name: 'NotFound',
@@ -30,13 +30,17 @@ const routes : RouteRecordRaw[] = [
 
 dayjs.locale('de');
 
-const app = createApp(App);
-app
-	.use(createRouter({
-		history: (import.meta.env.MODE == 'development') ? createWebHashHistory() : createWebHistory('/admin'),
-		routes,
-	}))
+const vueApp = createApp(App);
+const router = createRouter({
+	history: (import.meta.env.MODE == 'development') ? createWebHashHistory() : createWebHistory('/admin'),
+	routes,
+});
+vueApp
+	.use(router)
 	.mount('#app');
 
-app.provide('$isMobileScreen', screen.width <= 760);
-app.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+// @TODO localStorage jwt
+router.push('/login');
+
+vueApp.provide('$isMobileScreen', screen.width <= 760);
+vueApp.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
