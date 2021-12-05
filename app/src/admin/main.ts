@@ -8,6 +8,7 @@ import 'vfonts/FiraCode.css'
 
 import IndexComponent from '../consumer/components/Index.vue';
 import LoginComponent from './components/Login.vue';
+import { useApi } from '../composables/api';
 
 const routes: RouteRecordRaw[] = [
 	{
@@ -39,8 +40,10 @@ vueApp
 	.use(router)
 	.mount('#app');
 
-// @TODO localStorage jwt
-router.push('/login');
+const { isSignedIn } = useApi();
+if(!isSignedIn()) {
+	router.push('/login');
+}
 
 vueApp.provide('$isMobileScreen', screen.width <= 760);
 vueApp.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

@@ -33,7 +33,7 @@ class AuthController {
 		$username = $request->getParsedBody()['username'] ?? null;
 		$password = $request->getParsedBody()['password'] ?? null;
 
-		$user = $this->db->row('SELECT * FROM users WHERE username = ?', $username);
+		$user = $this->db->row('SELECT * FROM users WHERE username = ? OR email = ?', $username, $username);
 		
 		if($user && password_verify($password, $user['password'])) {
 			$jwt = JWT::encode([

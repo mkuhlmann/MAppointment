@@ -1,15 +1,28 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { NCard, NForm, NFormItem, NInput, NButton } from 'naive-ui';
+import { useApi } from '../../composables/api';
+import { useRouter } from 'vue-router';
 
-
+const api = useApi();
+const router = useRouter();
 const credentials = reactive({ username: '', password: '' });
+
+const login = async function () {
+	if(await api.login(credentials.username, credentials.password)) {
+		router.push('/dashboard');
+	}
+};
+
+if(api.isSignedIn()) {
+	router.push('/dashboard');
+}
 </script>
 
 <template>
 	<div class="page-container">
 		<n-card class="auth-card" title="MAppointments &mdash; Anmeldung">
-			<n-form :model="credentials">
+			<n-form :model="credentials"  v-on:submit="login">
 				<n-form-item item path="firstname" label="Nutzer">
 					<n-input v-model:value="credentials.username" placeholder="Nuter / E-Mail" />
 				</n-form-item>
@@ -21,9 +34,10 @@ const credentials = reactive({ username: '', password: '' });
 						placeholder="Passwort"
 					/>
 				</n-form-item>
+				
+				<n-button v-on:click="login">Anmelden</n-button>
 			</n-form>
 
-			<n-button>Anmelden</n-button>
 		</n-card>
 	</div>
 </template>
