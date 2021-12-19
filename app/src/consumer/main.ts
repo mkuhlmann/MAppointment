@@ -6,6 +6,8 @@ import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
 
+import 'virtual:windi.css';
+
 import IndexComponent from './components/Index.vue';
 import BookingComponent from './components/Booking.vue';
 const routes = [

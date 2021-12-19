@@ -19,18 +19,24 @@ class Migration_20211916_Initial implements MigrationInterface {
 			'CREATE TABLE appointments(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`name` varchar(255) NOT NULL,
-				`description` text
+				`description` text,
+				`location` varchar(128),
+				`locationLat` decimal(10,8),
+				`locationLng` decimal(11,8),
+				`canComment` tinyint(1) NOT NULL DEFAULT 1,
+				`createdAt` datetime,
+				`updatedAt` datetime
 			);
 			
 			CREATE TABLE appointment_slots(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
+				`appointmentId` varchar(21) NOT NULL REFERENCES appointments (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				`slots` int NOT NULL,
 				`free` int NOT NULL,
 				`date` datetime NOT NULL,
 				`duration` int NOT NULL,
-				`created_at` datetime,
-				`updated_at` datetime,
-				`appointment_id` varchar(21) NOT NULL REFERENCES appointments (`id`)
+				`createdAt` datetime,
+				`updatedAt` datetime
 			);
 			
 			CREATE TABLE appointment_slot_bookings(
@@ -39,9 +45,9 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`firstname` varchar(255),
 				`lastname` varchar(255),
 				`email` varchar(255),
-				`created_at` datetime,
-				`updated_at` datetime,
-				`appointment_slot_id` varchar(21) REFERENCES appointment_slots (`id`)
+				`createdAt` datetime,
+				`updatedAt` datetime,
+				`appointmentSlotId` varchar(21) REFERENCES appointment_slots (`id`)
 			);
 			
 			CREATE TABLE users(

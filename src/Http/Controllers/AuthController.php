@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use Firebase\JWT\JWT;
-use App\Config;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use ParagonIE\EasyDB\EasyDB;
 
 class AuthController {
-	private Config $config;
 	private EasyDB $db;
 
 	/**
 	 * 
-	 * @param \App\Config $config
+	 * 
 	 */
-	public function __construct(Config $config, EasyDB $db)
+	public function __construct(EasyDB $db)
 	{
-		$this->config = $config;
 		$this->db = $db;
 	}
 	 /**
@@ -39,7 +36,7 @@ class AuthController {
 			$jwt = JWT::encode([
 				'sub' => $user['id'],
 				'exp' =>  time() + 60 * 60 * 24
-			], $this->config->get('jwtKey'));
+			], $_ENV['JWT_SECRET']);
 	
 			return new JsonResponse(['jwt' => $jwt]);
 		}

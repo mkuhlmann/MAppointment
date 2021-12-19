@@ -17,6 +17,7 @@
         "laminas/laminas-httphandlerrunner": "^2.0",
         "league/container": "^4.1",
         "firebase/php-jwt": "^5.4",
-        "paragonie/easydb": "^2.11"
+        "paragonie/easydb": "^2.11",
+        "vlucas/phpdotenv": "^5.4"
     }
 }

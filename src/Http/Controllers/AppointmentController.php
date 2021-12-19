@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use Firebase\JWT\JWT;
-use App\Config;
 use App\Http\ResourceNotFoundJsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,6 +18,12 @@ class AppointmentController
 	public function __construct(EasyDB $db)
 	{
 		$this->db = $db;
+	}
+
+	public function getAppointments(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+	{
+		$appointments = $this->db->run('SELECT * FROM appointments');
+		return new JsonResponse($appointments);
 	}
 
 	public function getAppointment(ServerRequestInterface $request, array $params): ResponseInterface

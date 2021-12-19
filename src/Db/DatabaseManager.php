@@ -3,7 +3,6 @@
 namespace App\Db;
 
 use App\Application;
-use App\Config;
 use ParagonIE\EasyDB\EasyDB;
 
 class DatabaseManager {
@@ -12,16 +11,15 @@ class DatabaseManager {
 
 	/**
 	 * 
-	 * @param \App\Config $config
 	 * @param \App\Application $app
 	 */
-	public function __construct(Config $config, Application $app)
+	public function __construct(Application $app)
 	{
 		$this->app = $app;
 		$this->db = \ParagonIE\EasyDB\Factory::fromArray([
-			'mysql:host=captain.fra02.mkuhlmann.org;port=42306;dbname=appointments',
-			'root',
-			'jmFKGdu6dRb3o7zbep'
+			$_ENV['DB_DSN'],
+			$_ENV['DB_USER'],
+			$_ENV['DB_PASSWORD']
 		]);
 	}
 

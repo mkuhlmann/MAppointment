@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { h, ref, inject, Component } from 'vue';
-import { darkTheme, NConfigProvider, NCard, NLayout, NIcon, NSteps, NLayoutHeader, NMenu, NLayoutSider } from 'naive-ui';
+import { darkTheme, NConfigProvider, NCard, NLayout, NIcon, NText, NLayoutHeader, NMenu, NLayoutSider } from 'naive-ui';
 import { Dashboard as DashboardIcon, Calendar as CalendarIcon } from '@vicons/carbon';
 import { RouterLink, useRoute } from 'vue-router';
+
 
 const $isDarkMode = true || inject<boolean>('$isDarkMode');
 const useDarkMode = ($isDarkMode) ? darkTheme : null;
@@ -19,7 +20,7 @@ const renderMenuLabel = function (label: string, path: string) {
 
 const menuOptions = [
 	{
-		label: () => renderMenuLabel('Dashboard', '/dashboard'),
+		label: () => renderMenuLabel('Dashboard', '/'),
 		key: 'dashboard',
 		icon: renderIcon(DashboardIcon)
 	},
@@ -40,7 +41,7 @@ const menuOptions = [
 				style="height: 64px; display: flex; align-items: center; padding: 0 32px;"
 				bordered
 			>
-				<n-text class="logo">MAppointments</n-text>
+				<n-text class="logo">MAppointment</n-text>
 			</n-layout-header>
 			<n-layout has-sider position="absolute" style="top: 64px;">
 				<n-layout-sider

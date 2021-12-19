@@ -1,13 +1,18 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router';
-import App from './App.vue';
+import App from './AdminApp.vue';
+
 import dayjs from 'dayjs';
 import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
+import 'virtual:windi.css';
 
 import IndexComponent from '../consumer/components/Index.vue';
-import LoginComponent from './components/Login.vue';
+import AppointmentComponent from './views/Appointments.vue';
+import LoginComponent from './views/Login.vue';
+import DashboardComponent from './views/Dashboard.vue';
+
 import { useApi } from '../composables/api';
 
 const routes: RouteRecordRaw[] = [
@@ -16,16 +21,20 @@ const routes: RouteRecordRaw[] = [
 		name: 'NotFound',
 		component: IndexComponent
 	},
-    {
-        path: '/login',
-        name: 'Login',
-        component: LoginComponent
-    },
+	{
+		path: '/login',
+		name: 'Login',
+		component: LoginComponent
+	},
+	{
+		path: '/appointments',
+		name: 'Appointments',
+		component: AppointmentComponent
+	},
 	{
 		path: '/',
-		redirect: () => {
-			return { path: '/login' }
-		}
+		name:'Dashboard',
+		component: DashboardComponent
 	}
 ];
 
@@ -41,7 +50,7 @@ vueApp
 	.mount('#app');
 
 const { isSignedIn } = useApi();
-if(!isSignedIn()) {
+if (!isSignedIn()) {
 	router.push('/login');
 }
 

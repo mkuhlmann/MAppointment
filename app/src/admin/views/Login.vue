@@ -1,16 +1,23 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { NCard, NForm, NFormItem, NInput, NButton } from 'naive-ui';
+import { NCard, NForm, NFormItem, NInput, NButton, NCheckbox, NAlert, NSpace } from 'naive-ui';
 import { useApi } from '../../composables/api';
 import { useRouter } from 'vue-router';
 
 const api = useApi();
 const router = useRouter();
-const credentials = reactive({ username: '', password: '' });
+const credentials = reactive({ username: '', password: '', remember: true });
+
+const loginFailed = ref(false);
+const isLoading = ref(false);
 
 const login = async function () {
-	if(await api.login(credentials.username, credentials.password)) {
+	isLoading.value = true;
+	if(await api.login(credentials.username, credentials.password, credentials.remember)) {
 		router.push('/dashboard');
+	} else {
+		loginFailed.value = true;
+		isLoading.value = false;
 	}
 };
 
@@ -21,7 +28,7 @@ if(api.isSignedIn()) {
 
 <template>
 	<div class="page-container">
-		<n-card class="auth-card" title="MAppointments &mdash; Anmeldung">
+		<n-card class="auth-card" title="MAppointment &mdash; Anmeldung">
 			<n-form :model="credentials"  v-on:submit="login">
 				<n-form-item item path="firstname" label="Nutzer">
 					<n-input v-model:value="credentials.username" placeholder="Nuter / E-Mail" />
@@ -34,8 +41,15 @@ if(api.isSignedIn()) {
 						placeholder="Passwort"
 					/>
 				</n-form-item>
+				<n-form-item item path="remember" label="Angemeldet bleiben">
+					<n-checkbox v-model="credentials.remember" />
+				</n-form-item>
+
+				<n-alert v-if="loginFailed" class="mb-8" type="error">
+					Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.
+				</n-alert>
 				
-				<n-button v-on:click="login">Anmelden</n-button>
+				<n-button v-on:click="login" :loading="isLoading" type="primary">Anmelden</n-button>
 			</n-form>
 
 		</n-card>
