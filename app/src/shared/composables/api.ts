@@ -40,14 +40,15 @@ const $fetch = async function (url: RequestInfo, options: ApiRequestInit = {}) {
 
 	const response = await fetch(url, options);
 	const json = await response.json();
-	if (json.error) {
-		// throw json.error;
+	if (json.error && options.throwError) {
+		throw json.error;
 	}
 	return json;
 };
 
 interface ApiRequestInit extends RequestInit {
 	body?: any;
+	throwError?: boolean;
 }
 
 export function useApi() {

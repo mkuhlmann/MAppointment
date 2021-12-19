@@ -16,10 +16,12 @@ class CorsMiddleware implements MiddlewareInterface
 	 * {@inheritdoc}
 	 */
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-	{
-				
+	{				
 		$response = $handler->handle($request);
+
 		$response = $response->withAddedHeader('Access-Control-Allow-Origin', '*');
+		$response = $response->withAddedHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+		$response = $response->withAddedHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Authorization');
 
 		return $response;
 	}

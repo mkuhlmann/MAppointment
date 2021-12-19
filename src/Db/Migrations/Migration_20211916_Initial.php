@@ -41,13 +41,15 @@ class Migration_20211916_Initial implements MigrationInterface {
 			
 			CREATE TABLE appointment_slot_bookings(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
+				`appointmentSlotId` varchar(21) REFERENCES appointment_slots (`id`),
 				`secret` varchar(32) NOT NULL,
 				`firstname` varchar(255),
 				`lastname` varchar(255),
 				`email` varchar(255),
+				`comment` text,
+				`mailSentAt` datetime,
 				`createdAt` datetime,
-				`updatedAt` datetime,
-				`appointmentSlotId` varchar(21) REFERENCES appointment_slots (`id`)
+				`updatedAt` datetime				
 			);
 			
 			CREATE TABLE users(

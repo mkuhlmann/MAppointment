@@ -43,14 +43,18 @@ $container
 
 if (php_sapi_name() == 'cli') {
 	/** CLI */
-	echo 'Creating db...';
 
 	/** @var \ParagonIE\EasyDB\EasyDB $db */
 	$db = $app->get('db');
 
+	
+	echo 'Clearing database ...'.PHP_EOL;
 	$db->exec('DROP TABLE IF EXISTS appointment_slot_bookings; DROP TABLE IF EXISTS appointment_slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users; DELETE FROM _migrations;');
 
+	echo 'Migrating ...'.PHP_EOL;
 	$app->get('dbManager')->migrate();
+
+	echo 'Seeding ...'.PHP_EOL;
 	$db->insert('users', [
 		'id' => Helper::nanoid(),
 		'username' => 'mkuhlmann',

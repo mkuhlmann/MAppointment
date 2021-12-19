@@ -18,6 +18,7 @@
         "league/container": "^4.1",
         "firebase/php-jwt": "^5.4",
         "paragonie/easydb": "^2.11",
-        "vlucas/phpdotenv": "^5.4"
+        "vlucas/phpdotenv": "^5.4",
+        "rakit/validation": "^1.4"
     }
 }

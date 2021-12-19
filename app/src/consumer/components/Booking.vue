@@ -4,10 +4,10 @@ import { NCard, NSteps, NStep, NForm, NFormItem, NInput, FormRules, NDivider, NB
 import { Calendar } from 'v-calendar';
 import { useRouter, useRoute } from 'vue-router';
 import dayjs from 'dayjs';
-import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
+import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import { useApi } from '@/composables/api';
+import { useApi } from '@/shared/composables/api';
 import { Appointment } from '@/types';
 
 const api = useApi();
@@ -19,18 +19,19 @@ const $isDarkMode = inject<boolean>('$isDarkMode');
 
 const step = ref(1);
 const isLoading = ref(true);
+const slotsLoading = ref(false);
 
-const contact = ref({
+const booking = ref({
 	firstname: 'a',
 	lastname: 'b',
 	email: 'a@a.de',
 	comment: ''
 });
 
-const contactFormRef = ref<HTMLFormElement>();
+const bookingFormRef = ref<HTMLFormElement>();
 
-const submitContact = function() {
-	contactFormRef.value!.validate(function(errors: any) {
+const submitBookingForm = function () {
+	bookingFormRef.value!.validate(function (errors: any) {
 		if (!errors) {
 			step.value++;
 		}
@@ -64,32 +65,24 @@ const formRules: FormRules = {
 const appointment = ref<Partial<Appointment>>({});
 const availableDates = ref<Date[]>([]);
 
-fetch('http://localhost:8080/api/v1/appointments/' + route.params.id)
+let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { throwError: true })
+	.then(async _appointment => {
+		appointment.value = _appointment;
+
+		let _appointmentDates = await api.$fetch('/api/v1/appointments/' + route.params.id + '/get-available-dates');
+
+		let _dates = [];
+		for (let date of _appointmentDates) {
+			_dates.push(dayjs(date.date).toDate());
+		}
+		availableDates.value = _dates;
+		isLoading.value = false;
+	})
 	.catch(response => {
 		router.push('/404');
 		return response;
-	})
-	.then(response => {
-		if (response.status != 200) {
-			router.push('/404');
-			return;
-		}
-		else return response.json();
-	})
-	.then(json => {
-		appointment.value = json;
-
-		fetch('http://localhost:8080/api/v1/appointments/' + route.params.id + '/get-available-dates')
-			.then(response => response.json())
-			.then(json => {
-				let _dates = [];
-				for (let date of json) {
-					_dates.push(dayjs(date.date).toDate());
-				}
-				availableDates.value = _dates;
-				isLoading.value = false;
-			});
 	});
+
 
 const availableSlots = ref<{ id: string, free: string, duration: number, date: string }[]>([]);
 const chosenSlot = ref<{ id: string, free: string, duration: number, date: string }>({ id: '', free: '', duration: 0, date: '' });
@@ -97,17 +90,39 @@ const chosenSlot = ref<{ id: string, free: string, duration: number, date: strin
 const chosenDate = ref('');
 
 const chooseDate = async function (date: { id: string }) {
-	isLoading.value = true;
+	slotsLoading.value = true;
 	chosenDate.value = date.id;
 	let response = await fetch('http://localhost:8080/api/v1/appointments/' + appointment.value.id + '/get-available-slots/' + date.id);
-	isLoading.value = false;
+	slotsLoading.value = false;
 	availableSlots.value = await response.json();
 	chosenSlot.value.id = '';
 };
 
 
-const submitBooking = async function() {
-	step.value++;
+const submitBooking = async function () {
+	isLoading.value = true;
+
+	let response = await api.$fetch(`/api/v1/bookings`, {
+		method: 'POST',
+		body: {
+			appointmentId: appointment.value.id,
+			appointmentSlotId: chosenSlot.value.id,
+
+			firstname: booking.value.firstname,
+			lastname: booking.value.lastname,
+			email: booking.value.email,
+			comment: booking.value.comment
+		}
+	});
+
+	console.log(response);
+	if (response.success) {
+		router.replace('/booking/' + response.bookingId);
+		step.value++;
+	}
+
+	isLoading.value = false;
+
 };
 
 </script>
@@ -135,7 +150,7 @@ const submitBooking = async function() {
 
 				<n-p v-if="availableSlots.length == 0">Bitte Datum auswählen.</n-p>
 
-				<n-space>
+				<n-space v-if="!slotsLoading">
 					<n-button
 						v-for="slot in availableSlots"
 						:key="slot.id"
@@ -143,6 +158,8 @@ const submitBooking = async function() {
 						v-on:click="chosenSlot = slot"
 					>{{ dayjs(slot.date).format('HH:mm') }} &mdash; {{ dayjs(slot.date).add(slot.duration, 'minute').format('HH:mm') }}</n-button>
 				</n-space>
+
+				<n-spin size="large" v-if="slotsLoading" />
 
 				<n-button
 					class="mt-5 mb-1 w-full"
@@ -156,24 +173,30 @@ const submitBooking = async function() {
 			<div v-if="step == 2">
 				<n-table class="mb-5">
 					<tbody>
-						<tr><td>Termin</td><td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td></tr>
-						<tr><td>Zeit</td><td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td></tr>
+						<tr>
+							<td>Termin</td>
+							<td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td>
+						</tr>
+						<tr>
+							<td>Zeit</td>
+							<td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td>
+						</tr>
 					</tbody>
 				</n-table>
 
-				<n-form :model="contact" ref="contactFormRef" :rules="formRules">
+				<n-form :model="booking" ref="bookingFormRef" :rules="formRules">
 					<n-form-item item path="firstname" label="Vorname">
-						<n-input v-model:value="contact.firstname" placeholder="Vorname ..." />
+						<n-input v-model:value="booking.firstname" placeholder="Vorname ..." />
 					</n-form-item>
 					<n-form-item item path="lastname" label="Nachname">
-						<n-input v-model:value="contact.lastname" placeholder="Nachname ..." />
+						<n-input v-model:value="booking.lastname" placeholder="Nachname ..." />
 					</n-form-item>
 					<n-form-item item path="email" label="E-Mail">
-						<n-input v-model:value="contact.email" placeholder="E-Mail ..." />
+						<n-input v-model:value="booking.email" placeholder="E-Mail ..." />
 					</n-form-item>
 
 					<n-form-item v-if="appointment.canComment" item path="comment" label="Anmerkung">
-						<n-input type="textarea" v-model:value="contact.comment" placeholder="Anmerkung ..." />
+						<n-input type="textarea" v-model:value="booking.comment" placeholder="Anmerkung ..." />
 					</n-form-item>
 				</n-form>
 
@@ -181,23 +204,37 @@ const submitBooking = async function() {
 					class="mt-3 mb-1 w-full"
 					size="large"
 					type="info"
-					v-on:click="submitContact"
+					v-on:click="submitBookingForm"
 				>Weiter</n-button>
 
 				<n-a class="mt-2" v-on:click="step--">Zurück</n-a>
 			</div>
 
 			<div v-if="step == 3">
-
 				<n-h2>Buchungsübersicht</n-h2>
 
 				<n-table>
 					<tbody>
-						<tr><td>Vorname</td><td>{{ contact.firstname}}</td></tr>
-						<tr><td>Nachname</td><td>{{ contact.lastname}}</td></tr>
-						<tr><td>E-Mail</td><td>{{ contact.email}}</td></tr>
-						<tr><td>Termin</td><td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td></tr>
-						<tr><td>Zeit</td><td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td></tr>
+						<tr>
+							<td>Vorname</td>
+							<td>{{ booking.firstname }}</td>
+						</tr>
+						<tr>
+							<td>Nachname</td>
+							<td>{{ booking.lastname }}</td>
+						</tr>
+						<tr>
+							<td>E-Mail</td>
+							<td>{{ booking.email }}</td>
+						</tr>
+						<tr>
+							<td>Termin</td>
+							<td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td>
+						</tr>
+						<tr>
+							<td>Zeit</td>
+							<td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td>
+						</tr>
 					</tbody>
 				</n-table>
 
@@ -220,18 +257,33 @@ const submitBooking = async function() {
 
 				<n-table>
 					<tbody>
-						<tr><td>Vorname</td><td>{{ contact.firstname}}</td></tr>
-						<tr><td>Nachname</td><td>{{ contact.lastname}}</td></tr>
-						<tr><td>E-Mail</td><td>{{ contact.email}}</td></tr>
-						<tr><td>Termin</td><td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td></tr>
-						<tr><td>Zeit</td><td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td></tr>
+						<tr>
+							<td>Vorname</td>
+							<td>{{ booking.firstname }}</td>
+						</tr>
+						<tr>
+							<td>Nachname</td>
+							<td>{{ booking.lastname }}</td>
+						</tr>
+						<tr>
+							<td>E-Mail</td>
+							<td>{{ booking.email }}</td>
+						</tr>
+						<tr>
+							<td>Termin</td>
+							<td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td>
+						</tr>
+						<tr>
+							<td>Zeit</td>
+							<td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td>
+						</tr>
 					</tbody>
 				</n-table>
-				<div v-if="appointment.locationLat"  class="w-full mt-5 rounded-md" style="height: 200px;">
-					<l-map :center="[ appointment.locationLat, appointment.locationLng]" :zoom="13" >
+				<div v-if="appointment.locationLat" class="w-full mt-5 rounded-md" style="height: 200px;">
+					<l-map :center="[appointment.locationLat, appointment.locationLng]" :zoom="13">
 						<l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>
 						<l-control-layers />
-						<l-marker :lat-lng="[ appointment.locationLat, appointment.locationLng ]">
+						<l-marker :lat-lng="[appointment.locationLat, appointment.locationLng]">
 							<l-popup>Veranstaltungsort</l-popup>
 						</l-marker>
 					</l-map>
