@@ -49,10 +49,14 @@ vueApp
 	.use(router)
 	.mount('#app');
 
-const { isSignedIn } = useApi();
-if (!isSignedIn()) {
-	router.push('/login');
-}
+(async function() {
+	const { isSignedIn, getUser } = useApi();
+
+	if (!isSignedIn() || (await getUser()).error) {
+		router.push('/login');
+	}
+})().then();
+
 
 vueApp.provide('$isMobileScreen', screen.width <= 760);
 vueApp.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

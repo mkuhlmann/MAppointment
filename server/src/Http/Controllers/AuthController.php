@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Application;
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -10,14 +11,16 @@ use ParagonIE\EasyDB\EasyDB;
 
 class AuthController {
 	private EasyDB $db;
+	private Application $app;
 
 	/**
 	 * 
 	 * 
 	 */
-	public function __construct(EasyDB $db)
+	public function __construct(EasyDB $db, Application $app)
 	{
 		$this->db = $db;
+		$this->app = $app;
 	}
 	 /**
 	 * Controller.
@@ -42,5 +45,10 @@ class AuthController {
 		}
 
 		return new JsonResponse(['error' => 'invalid credentials']);		
+	}
+
+	public function getUser(ServerRequestInterface $request): ResponseInterface
+	{		
+		return new JsonResponse($this->app->get('user'));
 	}
 }

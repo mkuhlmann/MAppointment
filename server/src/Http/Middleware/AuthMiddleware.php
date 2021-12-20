@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Application;
 use Firebase\JWT\JWT;
 use Laminas\Diactoros\Response\JsonResponse;
 use ParagonIE\EasyDB\EasyDB;
@@ -15,18 +16,24 @@ use Psr\Http\Server\RequestHandlerInterface;
 class AuthMiddleware implements MiddlewareInterface
 {
 	private EasyDB $db;
+	private Application $app;
 
 	/**
 	 * 
 	 * 
 	 */
-	public function __construct(EasyDB $db)
+	public function __construct(EasyDB $db, Application $app)
 	{
 		$this->db = $db;
+		$this->app = $app;
 	}
 
-	/**
-	 * {@inheritdoc}
+
+	 /**
+	 * Auth Middeleware.
+	 *
+	 * @param \Psr\Http\Message\ServerRequestInterface $request
+	 * @return \Psr\Http\Message\ResponseInterface
 	 */
 	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
 	{
@@ -47,6 +54,8 @@ class AuthMiddleware implements MiddlewareInterface
 		if (empty($user)) {
 			return new JsonResponse(['error' => 'invalid token'], 401);
 		}
+
+		$this->app->set('user', $user);
 
 		$response = $handler->handle($request);
 		return $response;

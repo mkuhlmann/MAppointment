@@ -21,7 +21,7 @@ global $router;
 /** @global \App\Application */
 global $app;
 
-$auth = new AuthMiddleware($app->get('db'));
+$auth = $app->getContainer()->getNew(AuthMiddleware::class);
 
 $router->middleware(new JsonPayloadMiddleware());
 
@@ -32,6 +32,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 
 
 	$route->post('/auth/login', [AuthController::class, 'login']);
+	$route->get('/auth/user', [AuthController::class, 'getUser'])->middleware($auth);
 
 	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);
 	$route->get('/appointments/{id}', [AppointmentController::class, 'getAppointment']);

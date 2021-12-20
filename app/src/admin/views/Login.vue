@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { NCard, NForm, NFormItem, NInput, NButton, NCheckbox, NAlert, NSpace } from 'naive-ui';
 import { useApi } from '@/shared/composables/api';
 import { useRouter } from 'vue-router';
@@ -14,16 +14,19 @@ const isLoading = ref(false);
 const login = async function () {
 	isLoading.value = true;
 	if(await api.login(credentials.username, credentials.password, credentials.remember)) {
-		router.push('/dashboard');
+		router.push('/');
 	} else {
 		loginFailed.value = true;
 		isLoading.value = false;
 	}
 };
 
-if(api.isSignedIn()) {
-	router.push('/dashboard');
-}
+onMounted(async () => {
+	if(api.isSignedIn() &&  !(await api.getUser()).error) {
+		router.push('/dashboard');
+	}
+});
+
 </script>
 
 <template>

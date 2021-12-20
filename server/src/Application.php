@@ -18,6 +18,10 @@ class Application {
 		return self::$instance;
 	}
 
+	public function getContainer() : Container {
+		return $this->container;
+	}
+
 
 	public function __construct($basePath, $container) {
 		if(static::$instance == null) {
@@ -38,6 +42,10 @@ class Application {
 			return $obj[0];
 		}
 		return $obj;
+	}
+
+	public function set($id, $obj) {
+		$this->container->add($id, $obj);
 	}
 
 	public function __get($name) {

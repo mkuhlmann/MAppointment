@@ -21,6 +21,11 @@ const login = async function (username: string, password: string, remember: bool
 	return false;
 };
 
+
+const getUser = async function () {
+	return await $fetch('/api/v1/auth/user');
+};
+
 const $fetch = async function (url: RequestInfo, options: ApiRequestInit = {}) {
 	url = `${baseUrl}${url}`;
 	if (!options.headers) options.headers = new Headers();
@@ -52,5 +57,5 @@ interface ApiRequestInit extends RequestInit {
 }
 
 export function useApi() {
-	return { login, isSignedIn, $fetch };
+	return { login, isSignedIn, $fetch, getUser };
 };
