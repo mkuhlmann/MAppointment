@@ -1,0 +1,13 @@
+{
+	"name": "mappointment",
+	"workspaces": [
+		"app",
+		"server"
+	],
+	"scripts": {
+		"dev": "concurrently \"npm run dev -w app\" \"npm run dev -w server\""
+	},
+	"devDependencies": {
+		"concurrently": "^6.5.1"
+	}
+}

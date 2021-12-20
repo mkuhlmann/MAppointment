@@ -5,3 +5,4 @@ composer.phar
 .env
 public/*
 !public/index.php
+node_modules

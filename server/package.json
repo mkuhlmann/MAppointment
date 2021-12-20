@@ -1,0 +1,7 @@
+{
+	"name": "mappointment-server-php",
+	"scripts": {
+		"dev": "php -S localhost:8080 -t public/",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	}
+}
