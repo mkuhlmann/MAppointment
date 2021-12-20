@@ -2,7 +2,7 @@
 import { defineComponent, ref, inject } from 'vue';
 import { darkTheme, NConfigProvider, NCard, NLayout, NSpace, NSteps, NStep } from 'naive-ui';
 
-const $isDarkMode = true || inject<boolean>('$isDarkMode');
+const $isDarkMode = inject<boolean>('$isDarkMode');
 const useDarkMode = ($isDarkMode) ? darkTheme : null;
 const step = ref(1);
 </script>
@@ -10,7 +10,7 @@ const step = ref(1);
 <template>
 	<n-config-provider :theme="useDarkMode">
 		<n-layout position="absolute">
-			<div class="page-container">
+			<div class="page-container" v-bind:class="{ 'bg-gray-100': !$isDarkMode }">
 				<router-view></router-view>
 			</div>
 		</n-layout>		
@@ -23,5 +23,6 @@ const step = ref(1);
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	
 }
 </style>

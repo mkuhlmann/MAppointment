@@ -49,7 +49,7 @@ if (php_sapi_name() == 'cli') {
 
 	
 	echo 'Clearing database ...'.PHP_EOL;
-	$db->exec('DROP TABLE IF EXISTS appointment_slot_bookings; DROP TABLE IF EXISTS appointment_slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users; DELETE FROM _migrations;');
+	$db->exec('DROP TABLE IF EXISTS bookings; DROP TABLE IF EXISTS slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users; DELETE FROM _migrations;');
 
 	echo 'Migrating ...'.PHP_EOL;
 	$app->get('dbManager')->migrate();
@@ -71,7 +71,7 @@ if (php_sapi_name() == 'cli') {
 	]);
 
 	for ($i = 10; $i < 18; $i++) {
-		$db->insert('appointment_slots', [
+		$db->insert('slots', [
 			'id' => Helper::nanoid(),
 			'slots' => 2,
 			'free' => 2,
@@ -84,7 +84,7 @@ if (php_sapi_name() == 'cli') {
 	}
 
 	for ($i = 10; $i < 18; $i++) {
-		$db->insert('appointment_slots', [
+		$db->insert('slots', [
 			'id' => Helper::nanoid(),
 			'slots' => 2,
 			'free' => 0,

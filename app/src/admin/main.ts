@@ -13,7 +13,7 @@ import AppointmentComponent from './views/Appointments.vue';
 import LoginComponent from './views/Login.vue';
 import DashboardComponent from './views/Dashboard.vue';
 
-import { useApi } from '../composables/api';
+import { useApi } from '@/shared/composables/api';
 
 const routes: RouteRecordRaw[] = [
 	{

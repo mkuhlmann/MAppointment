@@ -6,6 +6,7 @@ namespace App;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BookingController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\CorsMiddleware;
 use App\Http\Middleware\JsonPayloadMiddleware;
@@ -29,16 +30,19 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 		return new Response();
 	});
 
-	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);
 
 	$route->post('/auth/login', [AuthController::class, 'login']);
 
+	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);
 	$route->get('/appointments/{id}', [AppointmentController::class, 'getAppointment']);
 	$route->get('/appointments/{id}/get-available-dates', [AppointmentController::class, 'getAvailableDates']);
 	$route->get('/appointments/{id}/get-available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);
+	
+	$route->get('/slots/{id}', [AppointmentController::class, 'getSlot']);
 
-	$route->get('/bookings/{id}', [AppointmentController::class, 'getBooking']);
-	$route->post('/bookings', [AppointmentController::class, 'bookAppointment']);
+	$route->post('/bookings', [BookingController::class, 'bookAppointment']);
+	$route->get('/bookings/{id}', [BookingController::class, 'getBooking']);
+
 
 	$route->post('/debug', function (ServerRequestInterface $request): ResponseInterface {
 		return new TextResponse(print_r($request->getBody()->__toString(), true));

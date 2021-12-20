@@ -10,11 +10,16 @@ import 'virtual:windi.css';
 
 import IndexComponent from './components/Index.vue';
 import BookingComponent from './components/Booking.vue';
+
 const routes = [
 	{
 		path: '/404',
 		name: 'NotFound',
 		component: IndexComponent
+	},
+	{
+		path: '/booking/:id',
+		component: () => import('./components/BookingView.vue')
 	},
 	{
 		path: '/:id',
@@ -30,6 +35,10 @@ const routes = [
 dayjs.locale('de');
 
 const app = createApp(App);
+
+app.provide('$isMobileScreen', screen.width <= 760);
+app.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
 app
 	.use(createRouter({
 		history: createWebHistory((import.meta.env.MODE == 'development') ? '/app/' : '/'),
@@ -37,5 +46,3 @@ app
 	}))
 	.mount('#app');
 
-app.provide('$isMobileScreen', screen.width <= 760);
-app.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

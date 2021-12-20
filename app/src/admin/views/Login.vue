@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { NCard, NForm, NFormItem, NInput, NButton, NCheckbox, NAlert, NSpace } from 'naive-ui';
-import { useApi } from '../../composables/api';
+import { useApi } from '@/shared/composables/api';
 import { useRouter } from 'vue-router';
 
 const api = useApi();

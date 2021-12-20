@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useApi } from '@/composables/api';
+import { useApi } from '@/shared/composables/api';
 import { ref } from 'vue';
 
 const api = useApi();

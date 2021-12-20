@@ -106,7 +106,7 @@ const submitBooking = async function () {
 		method: 'POST',
 		body: {
 			appointmentId: appointment.value.id,
-			appointmentSlotId: chosenSlot.value.id,
+			slotId: chosenSlot.value.id,
 
 			firstname: booking.value.firstname,
 			lastname: booking.value.lastname,
@@ -117,8 +117,7 @@ const submitBooking = async function () {
 
 	console.log(response);
 	if (response.success) {
-		router.replace('/booking/' + response.bookingId);
-		step.value++;
+		router.push(`/booking/${response.bookingId}?e=s`);
 	}
 
 	isLoading.value = false;
@@ -246,48 +245,6 @@ const submitBooking = async function () {
 				>Jetzt verbindlich buchen.</n-button>
 
 				<n-a class="mt-2" v-on:click="step--">Zurück</n-a>
-			</div>
-
-			<div v-if="step == 4">
-				<n-result
-					status="success"
-					title="Termin gebucht"
-					description="Sie erhalten eine Bestätigung per E-Mail."
-				></n-result>
-
-				<n-table>
-					<tbody>
-						<tr>
-							<td>Vorname</td>
-							<td>{{ booking.firstname }}</td>
-						</tr>
-						<tr>
-							<td>Nachname</td>
-							<td>{{ booking.lastname }}</td>
-						</tr>
-						<tr>
-							<td>E-Mail</td>
-							<td>{{ booking.email }}</td>
-						</tr>
-						<tr>
-							<td>Termin</td>
-							<td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td>
-						</tr>
-						<tr>
-							<td>Zeit</td>
-							<td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td>
-						</tr>
-					</tbody>
-				</n-table>
-				<div v-if="appointment.locationLat" class="w-full mt-5 rounded-md" style="height: 200px;">
-					<l-map :center="[appointment.locationLat, appointment.locationLng]" :zoom="13">
-						<l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>
-						<l-control-layers />
-						<l-marker :lat-lng="[appointment.locationLat, appointment.locationLng]">
-							<l-popup>Veranstaltungsort</l-popup>
-						</l-marker>
-					</l-map>
-				</div>
 			</div>
 
 			<n-divider />

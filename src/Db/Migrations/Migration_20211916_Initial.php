@@ -28,7 +28,7 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`updatedAt` datetime
 			);
 			
-			CREATE TABLE appointment_slots(
+			CREATE TABLE slots(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`appointmentId` varchar(21) NOT NULL REFERENCES appointments (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				`slots` int NOT NULL,
@@ -39,9 +39,9 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`updatedAt` datetime
 			);
 			
-			CREATE TABLE appointment_slot_bookings(
+			CREATE TABLE bookings(
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
-				`appointmentSlotId` varchar(21) REFERENCES appointment_slots (`id`),
+				`slotId` varchar(21) REFERENCES slots (`id`),
 				`secret` varchar(32) NOT NULL,
 				`firstname` varchar(255),
 				`lastname` varchar(255),
