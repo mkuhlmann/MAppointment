@@ -9,7 +9,7 @@ import 'vfonts/FiraCode.css'
 import 'virtual:windi.css';
 
 import IndexComponent from '../consumer/components/Index.vue';
-import AppointmentComponent from './views/Appointments.vue';
+import AppointmentsComponent from './views/Appointments.vue';
 import LoginComponent from './views/Login.vue';
 import DashboardComponent from './views/Dashboard.vue';
 
@@ -29,7 +29,12 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: '/appointments',
 		name: 'Appointments',
-		component: AppointmentComponent
+		component: AppointmentsComponent
+	},
+	{
+		path: '/appointments/:id',
+		name: 'Appointment',
+		component: () => import('./views/Appointment.vue')
 	},
 	{
 		path: '/',
@@ -41,6 +46,10 @@ const routes: RouteRecordRaw[] = [
 dayjs.locale('de');
 
 const vueApp = createApp(App);
+
+vueApp.provide('$isMobileScreen', screen.width <= 760);
+vueApp.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
 const router = createRouter({
 	history: (import.meta.env.MODE == 'development') ? createWebHashHistory() : createWebHistory('/admin'),
 	routes,
@@ -57,6 +66,3 @@ vueApp
 	}
 })().then();
 
-
-vueApp.provide('$isMobileScreen', screen.width <= 760);
-vueApp.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

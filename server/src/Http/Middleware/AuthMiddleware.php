@@ -18,16 +18,11 @@ class AuthMiddleware implements MiddlewareInterface
 	private EasyDB $db;
 	private Application $app;
 
-	/**
-	 * 
-	 * 
-	 */
 	public function __construct(EasyDB $db, Application $app)
 	{
 		$this->db = $db;
 		$this->app = $app;
 	}
-
 
 	 /**
 	 * Auth Middeleware.
@@ -44,6 +39,7 @@ class AuthMiddleware implements MiddlewareInterface
 		}
 
 		try {
+			$jwt = substr($jwt, 7);
 			$decoded = JWT::decode($jwt, $_ENV['JWT_SECRET'], ['HS256']);
 		} catch (\Exception $e) {
 			return new JsonResponse(['error' => 'invalid token'], 401);
@@ -52,12 +48,13 @@ class AuthMiddleware implements MiddlewareInterface
 		$user = $this->db->row('SELECT * FROM users WHERE id = ?', $decoded->sub);
 
 		if (empty($user)) {
-			return new JsonResponse(['error' => 'invalid token'], 401);
+			return new JsonResponse(['error' => 'invalid user'], 401);
 		}
 
 		$this->app->set('user', $user);
 
 		$response = $handler->handle($request);
+
 		return $response;
 	}
 }

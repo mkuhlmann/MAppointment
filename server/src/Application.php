@@ -2,8 +2,6 @@
 
 namespace App;
 
-use League\Container\Container;
-
 class Application {
 	protected $basePath;	
 	protected Container $container;
@@ -22,7 +20,6 @@ class Application {
 		return $this->container;
 	}
 
-
 	public function __construct($basePath, $container) {
 		if(static::$instance == null) {
 			static::setInstance($this);
@@ -38,9 +35,11 @@ class Application {
 			$obj = $this->container->get($id);
 		else
 			$obj = $this->container->getNew($id);
-		if(is_array($obj)) {
+		
+		if($this->container->hasTag($id)) {
 			return $obj[0];
 		}
+		
 		return $obj;
 	}
 

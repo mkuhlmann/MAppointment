@@ -10,11 +10,11 @@ include 'vendor/autoload.php';
 include 'helpers.php';
 
 /** .dotenv */
-$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv = \Dotenv\Dotenv::createImmutable(dirname(__FILE__) . '/..');
 $dotenv->safeLoad();
 
 /** Application and DI Setup */
-$container = new \League\Container\Container();
+$container = new \App\Container();
 $container->delegate(new League\Container\ReflectionContainer());
 
 $app = new \App\Application(dirname(__FILE__), $container);
@@ -32,7 +32,7 @@ $container
 $container
 	->add(\App\Db\DatabaseManager::class)
 	->addTag('dbManager')
-	->addArguments([$app->get('app')])
+	->addArguments([$app])
 	->setShared(true);
 
 $container

@@ -21,9 +21,14 @@ const login = async function (username: string, password: string, remember: bool
 	return false;
 };
 
-
+let user: { id: number; username: string; email: string };
 const getUser = async function () {
-	return await $fetch('/api/v1/auth/user');
+	if (user) return user;
+	let _user = await $fetch('/api/v1/auth/user');
+	if (!_user.error) {
+		user = _user;
+	}
+	return _user;
 };
 
 const $fetch = async function (url: RequestInfo, options: ApiRequestInit = {}) {

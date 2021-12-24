@@ -2,10 +2,11 @@
 import { useApi } from '@/shared/composables/api';
 import { ref, h } from 'vue';
 import { NDataTable, DataTableColumns, NButton } from 'naive-ui';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const api = useApi();
 const router = useRouter();
+const route = useRoute();
 
 const appointments = ref([]);
 const columns: DataTableColumns = [
@@ -32,7 +33,7 @@ const columns: DataTableColumns = [
 	}
 ];
 
-api.$fetch(`/api/v1/appointments`).then(res => {
+api.$fetch(`/api/v1/appointments/${route.params.id}`).then(res => {
 	appointments.value = res;
 });
 </script>

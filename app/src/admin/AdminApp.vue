@@ -5,7 +5,7 @@ import { Dashboard as DashboardIcon, Calendar as CalendarIcon } from '@vicons/ca
 import { RouterLink, useRoute } from 'vue-router';
 
 
-const $isDarkMode = true || inject<boolean>('$isDarkMode');
+const $isDarkMode = inject<boolean>('$isDarkMode');
 const useDarkMode = ($isDarkMode) ? darkTheme : null;
 const step = ref(1);
 const route = useRoute();
@@ -54,7 +54,7 @@ const menuOptions = [
 				>
 					<n-menu :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
 				</n-layout-sider>
-				<n-layout>
+				<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }" class="p-10">
 					<router-view></router-view>
 				</n-layout>
 			</n-layout>

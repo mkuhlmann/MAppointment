@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, toRefs, inject, computed } from 'vue'
-import { NCard, NSteps, NStep, NForm, NFormItem, NInput, FormRules, NDivider, NButton, NSpace, NSpin, NText, NP, NH2, NResult, NA, NTable } from 'naive-ui';
+import { NCard, NSteps, NStep, NForm, NFormItem, NInput, FormRules, NDivider, NButton, NSpace, NSpin, NText, NP, NH2, NResult, NA, NTable, NAlert } from 'naive-ui';
 import { Calendar } from 'v-calendar';
 import { useRouter, useRoute } from 'vue-router';
 import dayjs from 'dayjs';
@@ -98,7 +98,7 @@ const chooseDate = async function (date: { id: string }) {
 	chosenSlot.value.id = '';
 };
 
-
+const bookingResponse = ref({ error: null });
 const submitBooking = async function () {
 	isLoading.value = true;
 
@@ -115,10 +115,11 @@ const submitBooking = async function () {
 		}
 	});
 
-	console.log(response);
 	if (response.success) {
 		router.push(`/booking/${response.bookingId}?e=s`);
 	}
+
+	bookingResponse.value = response;
 
 	isLoading.value = false;
 
@@ -212,6 +213,10 @@ const submitBooking = async function () {
 			<div v-if="step == 3">
 				<n-h2>Buchungsübersicht</n-h2>
 
+				<n-alert v-if="bookingResponse.error" type="error" title="Buchung fehlgeschlagen" class="mb-5">
+					{{ bookingResponse.error}}
+				</n-alert>
+
 				<n-table>
 					<tbody>
 						<tr>
@@ -244,7 +249,7 @@ const submitBooking = async function () {
 					v-on:click="submitBooking"
 				>Jetzt verbindlich buchen.</n-button>
 
-				<n-a class="mt-2" v-on:click="step--">Zurück</n-a>
+				<n-a class="mt-2" v-on:click="step = 2">Zurück</n-a>
 			</div>
 
 			<n-divider />

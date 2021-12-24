@@ -13,7 +13,7 @@ export default defineConfig({
 		}
 	},
     build: {
-        outDir: '../public',
+        outDir: '../server/public',
         rollupOptions: {
             input: {
                 consumer: resolve(__dirname, 'index.html'),

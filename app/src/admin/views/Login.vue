@@ -23,7 +23,7 @@ const login = async function () {
 
 onMounted(async () => {
 	if(api.isSignedIn() &&  !(await api.getUser()).error) {
-		router.push('/dashboard');
+		router.push('/');
 	}
 });
 
