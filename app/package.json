@@ -22,5 +22,8 @@
     "vue-router": "^4.0.11",
     "vue-tsc": "^0.29.8",
     "windicss": "^3.4.0"
+  },
+  "dependencies": {
+    "vue-cal": "^4.2.0"
   }
 }

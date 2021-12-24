@@ -33,8 +33,8 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`appointmentId` varchar(21) NOT NULL REFERENCES appointments (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				`slots` int NOT NULL,
 				`free` int NOT NULL,
-				`date` datetime NOT NULL,
-				`duration` int NOT NULL,
+				`start` datetime NOT NULL,
+				`end` datetime NOT NULL,
 				`createdAt` datetime,
 				`updatedAt` datetime
 			);

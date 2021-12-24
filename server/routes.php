@@ -36,8 +36,10 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 
 	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);
 	$route->get('/appointments/{id}', [AppointmentController::class, 'getAppointment']);
-	$route->get('/appointments/{id}/get-available-dates', [AppointmentController::class, 'getAvailableDates']);
-	$route->get('/appointments/{id}/get-available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);
+	$route->get('/appointments/{id}/available-dates', [AppointmentController::class, 'getAvailableDates']);
+	$route->get('/appointments/{id}/available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);
+
+	$route->get('/appointments/{id}/slots', [AppointmentController::class, 'getSlots']);
 	
 	$route->get('/slots/{id}', [AppointmentController::class, 'getSlot']);
 

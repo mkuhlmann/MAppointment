@@ -3,6 +3,6 @@ vendor
 composer.phar
 .vscode
 .env
-public/*
-!public/index.php
+server/public/*
+!server/public/index.php
 node_modules

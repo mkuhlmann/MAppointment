@@ -71,11 +71,11 @@ onMounted(async () => {
 					</tr>
 					<tr>
 						<td>Termin</td>
-						<td>{{ dayjs(slot.date).format('dddd, DD.MM.YYYY') }}</td>
+						<td>{{ dayjs(slot.start).format('dddd, DD.MM.YYYY') }}</td>
 					</tr>
 					<tr>
 						<td>Zeit</td>
-						<td>{{ dayjs(slot.date).format('HH:mm') }} &mdash; {{ dayjs(slot.date).add(slot.duration, 'minute').format('HH:mm') }}</td>
+						<td>{{ dayjs(slot.start).format('HH:mm') }} &mdash; {{ dayjs(slot.end).format('HH:mm') }}</td>
 					</tr>
 				</tbody>
 			</n-table>

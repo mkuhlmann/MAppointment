@@ -64,5 +64,6 @@ vueApp
 	if (!isSignedIn() || (await getUser()).error) {
 		router.push('/login');
 	}
+
 })().then();
 

@@ -31,7 +31,6 @@ const menuOptions = [
 	}
 ];
 
-
 </script>
 
 <template>
@@ -42,6 +41,10 @@ const menuOptions = [
 				bordered
 			>
 				<n-text class="logo">MAppointment</n-text>
+				<div class="flex-grow"></div>
+				<div>
+					John Doe
+				</div>
 			</n-layout-header>
 			<n-layout has-sider position="absolute" style="top: 64px;">
 				<n-layout-sider
@@ -54,7 +57,7 @@ const menuOptions = [
 				>
 					<n-menu :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
 				</n-layout-sider>
-				<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }" class="p-10">
+				<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }" class="p-5">
 					<router-view></router-view>
 				</n-layout>
 			</n-layout>

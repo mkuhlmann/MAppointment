@@ -69,7 +69,7 @@ let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { th
 	.then(async _appointment => {
 		appointment.value = _appointment;
 
-		let _appointmentDates = await api.$fetch('/api/v1/appointments/' + route.params.id + '/get-available-dates');
+		let _appointmentDates = await api.$fetch('/api/v1/appointments/' + route.params.id + '/available-dates');
 
 		let _dates = [];
 		for (let date of _appointmentDates) {
@@ -84,15 +84,15 @@ let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { th
 	});
 
 
-const availableSlots = ref<{ id: string, free: string, duration: number, date: string }[]>([]);
-const chosenSlot = ref<{ id: string, free: string, duration: number, date: string }>({ id: '', free: '', duration: 0, date: '' });
+const availableSlots = ref<{ id: string, free: string, start: string, end: string }[]>([]);
+const chosenSlot = ref<{ id: string, free: string, start: string, end: string }>({ id: '', free: '', start: '', end: '' });
 
 const chosenDate = ref('');
 
 const chooseDate = async function (date: { id: string }) {
 	slotsLoading.value = true;
 	chosenDate.value = date.id;
-	let response = await fetch('http://localhost:8080/api/v1/appointments/' + appointment.value.id + '/get-available-slots/' + date.id);
+	let response = await api.$fetch(`/api/v1/appointments/${appointment.value.id}/available-slots/${date.id}`);
 	slotsLoading.value = false;
 	availableSlots.value = await response.json();
 	chosenSlot.value.id = '';
@@ -156,7 +156,7 @@ const submitBooking = async function () {
 						:key="slot.id"
 						:type="chosenSlot.id == slot.id ? 'success' : 'default'"
 						v-on:click="chosenSlot = slot"
-					>{{ dayjs(slot.date).format('HH:mm') }} &mdash; {{ dayjs(slot.date).add(slot.duration, 'minute').format('HH:mm') }}</n-button>
+					>{{ dayjs(slot.start).format('HH:mm') }} &mdash; {{ dayjs(slot.end).format('HH:mm') }}</n-button>
 				</n-space>
 
 				<n-spin size="large" v-if="slotsLoading" />
@@ -165,7 +165,7 @@ const submitBooking = async function () {
 					class="mt-5 mb-1 w-full"
 					size="large"
 					type="info"
-					v-on:click="step++"
+					v-on:click="step = 2"
 					:disabled="chosenSlot.id.length == 0"
 				>Weiter</n-button>
 			</div>
@@ -175,11 +175,11 @@ const submitBooking = async function () {
 					<tbody>
 						<tr>
 							<td>Termin</td>
-							<td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td>
+							<td>{{ dayjs(chosenSlot.start).format('dddd, DD.MM.YYYY') }}</td>
 						</tr>
 						<tr>
 							<td>Zeit</td>
-							<td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td>
+							<td>{{ dayjs(chosenSlot.start).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.end).format('HH:mm') }}</td>
 						</tr>
 					</tbody>
 				</n-table>
@@ -233,11 +233,11 @@ const submitBooking = async function () {
 						</tr>
 						<tr>
 							<td>Termin</td>
-							<td>{{ dayjs(chosenSlot.date).format('dddd, DD.MM.YYYY') }}</td>
+							<td>{{ dayjs(chosenSlot.start).format('dddd, DD.MM.YYYY') }}</td>
 						</tr>
 						<tr>
 							<td>Zeit</td>
-							<td>{{ dayjs(chosenSlot.date).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.date).add(chosenSlot.duration, 'minute').format('HH:mm') }}</td>
+							<td>{{ dayjs(chosenSlot.start).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.end).format('HH:mm') }}</td>
 						</tr>
 					</tbody>
 				</n-table>

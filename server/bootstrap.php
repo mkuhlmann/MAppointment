@@ -75,8 +75,8 @@ if (php_sapi_name() == 'cli') {
 			'id' => Helper::nanoid(),
 			'slots' => 2,
 			'free' => 2,
-			'date' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-20 10:00:00')),
-			'duration' => 30,
+			'start' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-29 10:00:00')),
+			'end' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-29 10:30:00')),
 			'appointmentId' => $id,
 			'createdAt' => \dbdate(),
 			'updatedAt' => \dbdate()
@@ -88,8 +88,8 @@ if (php_sapi_name() == 'cli') {
 			'id' => Helper::nanoid(),
 			'slots' => 2,
 			'free' => 0,
-			'date' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-21 10:00:00')),
-			'duration' => 30,
+			'start' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-30 10:00:00')),
+			'end' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-30 10:30:00')),
 			'appointmentId' => $id,
 			'createdAt' => \dbdate(),
 			'updatedAt' => \dbdate()

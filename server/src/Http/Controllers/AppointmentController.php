@@ -51,8 +51,14 @@ class AppointmentController
 		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
-		$result = $this->db->run('SELECT DATE_FORMAT(date, \'%Y-%m-%d\') as date, sum(free) as free FROM slots WHERE free > 0 GROUP BY DATE(date)');
+		$result = $this->db->run('SELECT DATE_FORMAT(start, \'%Y-%m-%d\') as start, sum(free) as free FROM slots WHERE free > 0 GROUP BY DATE(start)');
 		return new JsonResponse($result);
+	}
+
+	public function getSlots(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$slots = $this->db->run("SELECT slots.*, GROUP_CONCAT(CONCAT(bookings.firstname, ' ', bookings.lastname) SEPARATOR ', ') AS title FROM slots LEFT JOIN bookings ON bookings.slotId = slots.id WHERE appointmentId = ? GROUP BY slots.id", $params['id']);
+		return new JsonResponse($slots);
 	}
 
 	public function getAvailableSlots(ServerRequestInterface $request, array $params): ResponseInterface
@@ -62,7 +68,7 @@ class AppointmentController
 		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
-		$result = $this->db->run('SELECT id, date, free, duration FROM slots WHERE free > 0 AND date >= ? AND date <= ? ORDER BY date ASC', $params['date'] . ' 00:00:00', $params['date'] . ' 23:59:59');
+		$result = $this->db->run('SELECT id, date, free, duration FROM slots WHERE free > 0 AND start >= ? AND start <= ? ORDER BY start ASC', $params['date'] . ' 00:00:00', $params['date'] . ' 23:59:59');
 		return new JsonResponse($result);
 	}
 }
