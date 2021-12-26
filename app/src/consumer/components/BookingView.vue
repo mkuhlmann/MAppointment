@@ -59,11 +59,11 @@ onMounted(async () => {
 				<tbody>
 					<tr>
 						<td>Vorname</td>
-						<td>{{ booking.firstname }}</td>
+						<td>{{ booking.firstName }}</td>
 					</tr>
 					<tr>
 						<td>Nachname</td>
-						<td>{{ booking.lastname }}</td>
+						<td>{{ booking.lastName }}</td>
 					</tr>
 					<tr>
 						<td>E-Mail</td>
@@ -79,11 +79,11 @@ onMounted(async () => {
 					</tr>
 				</tbody>
 			</n-table>
-			<div v-if="appointment.locationLat" class="w-full mt-5 rounded-md" style="height: 200px;">
-				<l-map :center="[appointment.locationLat, appointment.locationLng]" :zoom="13">
+			<div v-if="appointment.latitude" class="w-full mt-5 rounded-md" style="height: 200px;">
+				<l-map :center="[appointment.latitude, appointment.longitude]" :zoom="13">
 					<l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>
 					<l-control-layers />
-					<l-marker :lat-lng="[appointment.locationLat, appointment.locationLng]">
+					<l-marker :lat-lng="[appointment.latitude, appointment.longitude]">
 						<l-popup>Veranstaltungsort</l-popup>
 					</l-marker>
 				</l-map>

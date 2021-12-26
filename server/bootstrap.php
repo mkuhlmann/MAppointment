@@ -24,8 +24,8 @@ $container
 	->add(\Psr\Container\ContainerInterface::class, $container)
 	->setShared(true);
 
-$container->addServiceProvider(new \App\ServiceProviders\ApplicationServiceProvider());
-$container->addServiceProvider(new \App\ServiceProviders\RouteServiceProvider());
+$container->addServiceProvider(new \App\ServiceProvider\ApplicationServiceProvider());
+$container->addServiceProvider(new \App\ServiceProvider\RouteServiceProvider());
 
 $app = $container->get(\App\Application::class);
 $router = $container->get(\League\Route\Router::class);

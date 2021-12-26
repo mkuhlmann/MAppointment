@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { h, ref, inject, Component } from 'vue';
 import { darkTheme, NConfigProvider, NCard, NLayout, NIcon, NText, NLayoutHeader, NMenu, NLayoutSider } from 'naive-ui';
-import { Dashboard as DashboardIcon, Calendar as CalendarIcon } from '@vicons/carbon';
+import DashboardIcon from '@vicons/carbon/Dashboard';
+import CalendarIcon from '@vicons/carbon/Calendar';
+import UserIcon from '@vicons/carbon/User';
 import { RouterLink, useRoute } from 'vue-router';
 
 
@@ -28,6 +30,11 @@ const menuOptions = [
 		label: () => renderMenuLabel('Termine', '/appointments'),
 		key: 'appointments',
 		icon: renderIcon(CalendarIcon)
+	},
+	{
+		label: () => renderMenuLabel('Nutzer', '/users'),
+		key: 'users',
+		icon: renderIcon(UserIcon)
 	}
 ];
 
@@ -57,7 +64,7 @@ const menuOptions = [
 				>
 					<n-menu :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
 				</n-layout-sider>
-				<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }" class="p-5">
+				<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }">
 					<router-view></router-view>
 				</n-layout>
 			</n-layout>

@@ -22,8 +22,8 @@ const isLoading = ref(true);
 const slotsLoading = ref(false);
 
 const booking = ref({
-	firstname: 'a',
-	lastname: 'b',
+	firstName: 'a',
+	lastName: 'b',
 	email: 'a@a.de',
 	comment: ''
 });
@@ -39,12 +39,12 @@ const submitBookingForm = function () {
 };
 
 const formRules: FormRules = {
-	firstname: {
+	firstName: {
 		required: true,
 		trigger: ['input', 'blur'],
 		message: 'Bitte Vornamen angeben.'
 	},
-	lastname: {
+	lastName: {
 		required: true,
 		trigger: ['input', 'blur'],
 		message: 'Bitte Nachnamen angeben.'
@@ -68,6 +68,12 @@ const availableDates = ref<Date[]>([]);
 let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { throwError: true })
 	.then(async _appointment => {
 		appointment.value = _appointment;
+
+		if(!_appointment.isActive) {
+			step.value = -1;
+			isLoading.value = false;
+			return;
+		}
 
 		let _appointmentDates = await api.$fetch('/api/v1/appointments/' + route.params.id + '/available-dates');
 
@@ -107,8 +113,8 @@ const submitBooking = async function () {
 			appointmentId: appointment.value.id,
 			slotId: chosenSlot.value.id,
 
-			firstname: booking.value.firstname,
-			lastname: booking.value.lastname,
+			firstName: booking.value.firstName,
+			lastName: booking.value.lastName,
 			email: booking.value.email,
 			comment: booking.value.comment
 		}
@@ -130,6 +136,12 @@ const submitBooking = async function () {
 	<n-spin :show="isLoading">
 		<n-card v-if="!isLoading" class="booking-container" :title="appointment.name" size="large">
 			<n-p>{{ appointment.description }}</n-p>
+
+			<div v-if="step == -1">
+				<n-alert type="info">
+					Buchungen aktuell nicht möglich.
+				</n-alert>
+			</div>
 
 			<div v-if="step == 1">
 				<Calendar
@@ -184,11 +196,11 @@ const submitBooking = async function () {
 				</n-table>
 
 				<n-form :model="booking" ref="bookingFormRef" :rules="formRules">
-					<n-form-item item path="firstname" label="Vorname">
-						<n-input v-model:value="booking.firstname" placeholder="Vorname ..." />
+					<n-form-item item path="firstName" label="Vorname">
+						<n-input v-model:value="booking.firstName" placeholder="Vorname ..." />
 					</n-form-item>
-					<n-form-item item path="lastname" label="Nachname">
-						<n-input v-model:value="booking.lastname" placeholder="Nachname ..." />
+					<n-form-item item path="lastName" label="Nachname">
+						<n-input v-model:value="booking.lastName" placeholder="Nachname ..." />
 					</n-form-item>
 					<n-form-item item path="email" label="E-Mail">
 						<n-input v-model:value="booking.email" placeholder="E-Mail ..." />
@@ -220,11 +232,11 @@ const submitBooking = async function () {
 					<tbody>
 						<tr>
 							<td>Vorname</td>
-							<td>{{ booking.firstname }}</td>
+							<td>{{ booking.firstName }}</td>
 						</tr>
 						<tr>
 							<td>Nachname</td>
-							<td>{{ booking.lastname }}</td>
+							<td>{{ booking.lastName }}</td>
 						</tr>
 						<tr>
 							<td>E-Mail</td>

@@ -1,10 +1,7 @@
 #!/bin/sh
 
 # fix permissions if needed
-chown nginx.nginx -R /www
-if [ -d /data ]; then
-  chown nginx.nginx -R /data
-fi
+chown nginx.nginx -R /app
 
 nginx
 php-fpm8 -F

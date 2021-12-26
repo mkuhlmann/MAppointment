@@ -27,7 +27,6 @@ class MigrationRunner {
 
 	public function run($migrationClass) {
 		$migration = new $migrationClass($this->db);
-	//	$migration = $this->container->getNew($migrationClass);
 		$migration->up();
 	}
 }

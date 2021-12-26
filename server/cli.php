@@ -26,8 +26,8 @@ $container
 	->add(\Psr\Container\ContainerInterface::class, $container)
 	->setShared(true);
 
-$container->addServiceProvider(new \App\ServiceProviders\ApplicationServiceProvider());
-$container->addServiceProvider(new \App\ServiceProviders\RouteServiceProvider());
+$container->addServiceProvider(new \App\ServiceProvider\ApplicationServiceProvider());
+$container->addServiceProvider(new \App\ServiceProvider\RouteServiceProvider());
 
 $app = $container->get(\App\Application::class);
 
@@ -56,8 +56,8 @@ if (php_sapi_name() == 'cli') {
 	$db->insert('appointments', [
 		'id' => $id,
 		'name' => 'Grippeschutzimpfung 2021 Aekno',
-		'locationLat' => 51.224150,
-		'locationLng' => 6.864700,
+		'latitude' => 51.224150,
+		'longitude' => 6.864700,
 	]);
 
 	for ($i = 10; $i < 18; $i++) {

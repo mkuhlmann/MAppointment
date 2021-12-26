@@ -40,8 +40,8 @@ class BookingController
 		$validation = $validator->validate($body, [
 			'appointmentId' => 'required',
 			'slotId' => 'required',
-			'firstname' => 'required',
-			'lastname' => 'required',
+			'firstName' => 'required',
+			'lastName' => 'required',
 			'email' => 'required|email'
 		]);
 
@@ -76,8 +76,8 @@ class BookingController
 			'id' => $bookingId,
 			'secret' => Helper::nanoid(),
 			'slotId' => $slotId,
-			'firstname' => $body['firstname'],
-			'lastname' => $body['lastname'],
+			'firstName' => $body['firstName'],
+			'lastName' => $body['lastName'],
 			'email' => $body['email'],
 			'comment' => $body['comment'] ?? null,
 			'createdAt' => date('Y-m-d H:i:s'),

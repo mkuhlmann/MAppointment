@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ServiceProviders;
+namespace App\ServiceProvider;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Route\Router;
