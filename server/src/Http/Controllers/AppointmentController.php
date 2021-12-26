@@ -68,7 +68,7 @@ class AppointmentController
 		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
-		$result = $this->db->run('SELECT id, date, free, duration FROM slots WHERE free > 0 AND start >= ? AND start <= ? ORDER BY start ASC', $params['date'] . ' 00:00:00', $params['date'] . ' 23:59:59');
+		$result = $this->db->run('SELECT id, start, end FROM slots WHERE free > 0 AND start >= ? AND start <= ? ORDER BY start ASC', $params['date'] . ' 00:00:00', $params['date'] . ' 23:59:59');
 		return new JsonResponse($result);
 	}
 }

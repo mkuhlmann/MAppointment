@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/** @var \League\Route\Router $router */
+/** @var \League\Container\Container $container */
+
 namespace App;
 
 use App\Http\Controllers\AuthController;
@@ -16,12 +19,8 @@ use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/** @global \League\Route\Router $router */
-global $router;
-/** @global \App\Application */
-global $app;
 
-$auth = $app->getContainer()->getNew(AuthMiddleware::class);
+$auth = $container->getNew(AuthMiddleware::class);
 
 $router->middleware(new JsonPayloadMiddleware());
 

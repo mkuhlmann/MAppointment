@@ -73,7 +73,7 @@ let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { th
 
 		let _dates = [];
 		for (let date of _appointmentDates) {
-			_dates.push(dayjs(date.date).toDate());
+			_dates.push(dayjs(date.start).toDate());
 		}
 		availableDates.value = _dates;
 		isLoading.value = false;
@@ -92,9 +92,8 @@ const chosenDate = ref('');
 const chooseDate = async function (date: { id: string }) {
 	slotsLoading.value = true;
 	chosenDate.value = date.id;
-	let response = await api.$fetch(`/api/v1/appointments/${appointment.value.id}/available-slots/${date.id}`);
+	availableSlots.value = await api.$fetch(`/api/v1/appointments/${appointment.value.id}/available-slots/${date.id}`);
 	slotsLoading.value = false;
-	availableSlots.value = await response.json();
 	chosenSlot.value.id = '';
 };
 

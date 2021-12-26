@@ -21,7 +21,6 @@ class BookingController
 		$this->db = $db;
 	}
 
-
 	public function getBooking(ServerRequestInterface $request, array $params): ResponseInterface
 	{
 		$booking = $this->db->row('SELECT * FROM bookings WHERE id = ?', $params['id']);
@@ -69,7 +68,7 @@ class BookingController
 
 		$booking = $this->db->row('SELECT * FROM bookings WHERE email = ?', $body['email']);
 		if ($booking !== null) {
-			return new JsonResponse(['error' => 'Booking already exists'], 400);
+			return new JsonResponse(['error' => 'Buchung existiert bereits.'], 400);
 		}
 
 		$bookingId = Helper::nanoid();
