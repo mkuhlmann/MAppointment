@@ -37,4 +37,28 @@ class SlotController
 		return new JsonResponse($slot);
 	}
 
+	public function createSlot(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$body = $request->getParsedBody();
+
+		$id = \nanoid();
+
+		$this->db->insert(
+			'slots',
+			[
+				'id' => $id,
+				'slots' => $body['slots'],
+				'free' => $body['slots'],
+				'start' => $body['start'],
+				'end' => $body['end'],
+				'createdAt' => \dbdate(),
+				'updatedAt' => \dbdate()
+			]
+		);
+
+		return new JsonResponse([
+			'id' => $id
+		]);
+	}
+
 }
