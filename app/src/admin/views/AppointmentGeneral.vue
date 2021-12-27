@@ -39,7 +39,7 @@ const onAppointmentBlur = async function () {
 </script>
 
 <template>
-	<div class="flex flex-col p-5">
+	<div class="flex flex-col">
 		<div class="flex items-center">
 			<n-h2 class="flex-grow">{{ appointment.name }}</n-h2>
 			<div
@@ -92,22 +92,7 @@ const onAppointmentBlur = async function () {
 		</n-form>
 
 		<n-text :italic="true">Änderungen werden automatisch gespeichert.</n-text>
-
-		<n-hr />
-
-		<div class="flex items-center">
-			<span>Erstelle</span>
-			<n-input-number class="mx-3" />
-			<span>Minuten lange Slots im Zeitraum</span>
-			<n-date-picker type="datetimerange" class="mx-3" />
-			<n-button type="primary">Erstellen</n-button>
-		</div>
-
 	</div>
-
-	<n-modal :show="typeof slot.id != 'undefined'" :mask-closable="true">
-		<slot-modal v-model="slot" />
-	</n-modal>
 </template>
 
 <style>

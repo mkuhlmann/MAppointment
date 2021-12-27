@@ -30,20 +30,23 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 		return new Response();
 	});
 
-
 	$route->post('/auth/login', [AuthController::class, 'login']);
 	$route->get('/auth/user', [AuthController::class, 'getUser'])->middleware($auth);
 
 	// /appointments admin routes
 	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);
+	
 	$route->put('/appointments/{id}', [AppointmentController::class, 'updateAppointment'])->middleware($auth);
+	$route->get('/appointments/{id}/bookings', [AppointmentController::class, 'getBookings'])->middleware($auth);
+	
+	$route->post('/appointments/{id}/slots', [AppointmentController::class, 'createSlot'])->middleware($auth);
 
 	// /appointments public routes
 	$route->get('/appointments/{id}', [AppointmentController::class, 'getAppointment']);
 	$route->get('/appointments/{id}/available-dates', [AppointmentController::class, 'getAvailableDates']);
-	$route->get('/appointments/{id}/available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);
+	$route->get('/appointments/{id}/available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);#
 
-	
+
 	$route->get('/appointments/{id}/slots', [AppointmentController::class, 'getSlots']);
 	
 	$route->get('/slots/{id}', [SlotController::class, 'getSlot']);

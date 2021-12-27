@@ -10,7 +10,10 @@ function db() : \ParagonIE\EasyDB\EasyDB {
 	return app()->get(\ParagonIE\EasyDB\EasyDB::class);
 }
 
-function dbdate() : string {
+function dbdate($timestamp = null) : string {
+	if($timestamp != null) {
+		return gmdate('Y-m-d H:i:s', $timestamp);
+	}
 	return gmdate('Y-m-d H:i:s');
 }
 

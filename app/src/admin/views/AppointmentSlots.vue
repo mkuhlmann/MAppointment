@@ -2,19 +2,51 @@
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
 import 'vue-cal/dist/drag-and-drop.js';
+import { NDatePicker, NInputNumber, NButton, NModal } from 'naive-ui';
+import SlotModal from '../components/Slot.vue';
+
 
 import { Appointment, Slot } from '@/types';
 import { useApi } from '@/shared/composables/api';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import dayjs from 'dayjs';
 
-const slots = ref([]);
+const slots = ref<Slot[]>([]);
+const api = useApi();
+const modalSlot = ref<Partial<Slot>>({});
+
+const route = useRoute();
 
 api.$fetch(`/api/v1/appointments/${route.params.id}/slots`).then(res => {
+	for(const slot of res) {
+		slot.start = dayjs.utc(slot.start).local().toDate();
+		slot.end = dayjs.utc(slot.end).local().toDate();
+	}
+	
 	slots.value = res;
 });
 
 
-const onEventCreate = function ($event: any) {
-	console.log($event);
+const onEventCreate = async function ($event: any) {
+	console.debug(`Event created ${$event.start} - ${$event.end}`);
+
+	let slot = await api.$fetch(`/api/v1/appointments/${route.params.id}/slots`, {
+		method: 'POST',
+		body: {
+			slots: 1,
+			start: $event.start,
+			end: $event.end
+		}
+	});
+	slots.value.push(slot);
+
+	slot.start = dayjs.utc(slot.start).local().toDate();
+	slot.end = dayjs.utc(slot.end).local().toDate();
+
+	console.debug(`--> ${slot.id}: ${slot.start} - ${slot.end}`);
+
+	return true;
 };
 
 const onEventChange = function ($event: any) {
@@ -24,12 +56,26 @@ const onEventChange = function ($event: any) {
 };
 
 const onEventClick = function ($event: any) {
-	slot.value = $event;
+	modalSlot.value = $event;
 };
 
+window.a = slots;
 </script>
 
+
 <template>
+
+	<n-modal :show="typeof modalSlot.id != 'undefined'" :mask-closable="true">
+		<slot-modal v-model="modalSlot" />
+	</n-modal>
+
+	<div class="flex items-center">
+		<span>Erstelle</span>
+		<n-input-number class="mx-3" />
+		<span>Minuten lange Slots im Zeitraum</span>
+		<n-date-picker type="datetimerange" class="mx-3" />
+		<n-button type="primary">Erstellen</n-button>
+	</div>
 
 	<div class="h-screen-md">
 		<vue-cal
@@ -40,7 +86,7 @@ const onEventClick = function ($event: any) {
 			:events="slots"
 			:time-step="15"
 			:drag-to-create-event="true"
-			@event-create="onEventCreate"
+			@event-drag-create="onEventCreate"
 			@event-change="onEventChange"
 			@event-click="onEventClick"
 		></vue-cal>

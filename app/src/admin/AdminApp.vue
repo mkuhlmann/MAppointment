@@ -32,7 +32,7 @@ const menuOptions = [
 		icon: renderIcon(CalendarIcon)
 	},
 	{
-		label: () => renderMenuLabel('Nutzer', '/users'),
+		label: () => 'Nutzer', //enderMenuLabel('Nutzer', '/users'),
 		key: 'users',
 		icon: renderIcon(UserIcon)
 	}

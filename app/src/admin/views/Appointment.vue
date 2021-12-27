@@ -1,24 +1,33 @@
 <script lang="ts" setup>
-import { NMenu } from 'naive-ui';
+import { NMenu, NHr } from 'naive-ui';
+import { h } from 'vue';
+import { RouterLink, useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const menuOptions = [
 	{
-		label: 'Allgemein',
+		label: () => h(RouterLink, { to: { path: `/appointments/${route.params.id}` } }, { default: () => 'Übersicht' }),
 		key: 'general'
-	}, {
-		label: 'Termine',
+	},
+	{
+		label: () => h(RouterLink, { to: { path: `/appointments/${route.params.id}/slots` } }, { default: () => 'Termine' }),
 		key: 'slots'
-	}, {
-		label: 'Buchungen',
+	},
+	{
+		label: () => h(RouterLink, { to: { path: `/appointments/${route.params.id}/bookings` } }, { default: () => 'Buchungen' }),
 		key: 'bookings'
 	}
-	
+
 ];
 
 </script>
 
 <template>
-	<n-menu :options="menuOptions" mode="horizontal" />
+	<n-menu class="mt-2" :options="menuOptions" mode="horizontal" />
+	<n-hr />
 
-	<router-view></router-view>
+	<div class="p-5">
+		<router-view />
+	</div>
 </template>

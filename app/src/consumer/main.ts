@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { createRouter, createWebHistory } from 'vue-router';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
@@ -33,6 +34,7 @@ const routes = [
 ];
 
 dayjs.locale('de');
+dayjs.extend(utc);
 
 const app = createApp(App);
 

@@ -3,6 +3,8 @@ import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } 
 import App from './AdminApp.vue';
 
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
 import 'dayjs/locale/de';
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
@@ -39,6 +41,14 @@ const routes: RouteRecordRaw[] = [
 			{
 				path: '',
 				component: () => import('./views/AppointmentGeneral.vue')
+			}, 
+			{
+				path: 'slots',
+				component: () => import('./views/AppointmentSlots.vue')
+			},
+			{
+				path: 'bookings',
+				component: () => import('./views/AppointmentBookings.vue')
 			}
 		]
 	},
@@ -50,6 +60,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 dayjs.locale('de');
+dayjs.extend(utc);
 
 const vueApp = createApp(App);
 
