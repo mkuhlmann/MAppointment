@@ -82,11 +82,11 @@ const onAppointmentBlur = async function () {
 				</n-form-item>
 
 				<n-form-item label="Längengrad">
-					<n-input v-model:value="appointment.longitude" @blur="onAppointmentBlur" />
+					<n-input-number v-model:value="appointment.longitude" @blur="onAppointmentBlur" />
 				</n-form-item>
 
 				<n-form-item label="Breitengrad">
-					<n-input v-model:value="appointment.latitude" @blur="onAppointmentBlur" />
+					<n-input-number v-model:value="appointment.latitude" @blur="onAppointmentBlur" />
 				</n-form-item>
 			</div>
 		</n-form>

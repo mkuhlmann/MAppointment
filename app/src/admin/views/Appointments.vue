@@ -38,5 +38,7 @@ api.$fetch(`/api/v1/appointments`).then(res => {
 </script>
 
 <template>
-	<n-data-table :data="appointments" :columns="columns" :loading="appointments.length==0" />
+	<div class="p-5">
+		<n-data-table :data="appointments" :columns="columns" :loading="appointments.length == 0" />
+	</div>
 </template>

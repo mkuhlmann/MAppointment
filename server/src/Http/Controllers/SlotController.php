@@ -10,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use ParagonIE\EasyDB\EasyDB;
-use Rakit\Validation\Validator;
 
 class SlotController
 {
@@ -37,5 +36,24 @@ class SlotController
 		return new JsonResponse($slot);
 	}
 
+	public function updateSlot(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$slot = $this->db->row('SELECT * FROM slots WHERE id = ?', $params['id']);
+		if (!$slot) {
+			return new ResourceNotFoundJsonResponse();
+		}
 
+		$body = $request->getParsedBody();
+
+		$this->db->update(
+			'slots',
+			[
+				'start' =>  \dbdate(strtotime($body['start'])),
+				'end' => \dbdate(strtotime($body['end'])),
+			],
+			['id' => $params['id']]
+		);
+
+		return $this->getSlot($request, $params);
+	}
 }

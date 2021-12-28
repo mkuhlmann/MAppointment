@@ -28,6 +28,16 @@ api.$fetch(`/api/v1/appointments/${route.params.id}/slots`).then(res => {
 });
 
 
+const batchCreateSlotsConfig = ref({
+	timeRange: [dayjs().startOf('day').unix()*1000, dayjs().endOf('day').unix()*1000] as [number, number],
+	count: 5
+});
+const batchCreateSlots = async function() {
+
+
+};
+
+
 const onEventCreate = async function ($event: any) {
 	console.debug(`Event created ${$event.start} - ${$event.end}`);
 
@@ -44,7 +54,7 @@ const onEventCreate = async function ($event: any) {
 	slot.start = dayjs.utc(slot.start).local().toDate();
 	slot.end = dayjs.utc(slot.end).local().toDate();
 
-	console.debug(`--> ${slot.id}: ${slot.start} - ${slot.end}`);
+	console.debug(`--> ${slot.id} created: ${slot.start} - ${slot.end}`);
 
 	return true;
 };
@@ -52,14 +62,23 @@ const onEventCreate = async function ($event: any) {
 const onEventChange = function ($event: any) {
 	const event = $event.event;
 
-	console.debug(`Event ${event.id} changed: ${event.start} - ${event.end}`);
+	if(event.id) {
+		api.$fetch(`/api/v1/slots/${event.id}`, {
+			method: 'PUT',
+			body: {
+				start: event.start,
+				end: event.end
+			}
+		});
+
+		console.debug(`${event.id} changed ${event.start} - ${event.end}`);
+	}
 };
 
 const onEventClick = function ($event: any) {
 	modalSlot.value = $event;
 };
 
-window.a = slots;
 </script>
 
 
@@ -71,10 +90,10 @@ window.a = slots;
 
 	<div class="flex items-center">
 		<span>Erstelle</span>
-		<n-input-number class="mx-3" />
+		<n-input-number v-model:value="batchCreateSlotsConfig.count" class="mx-3" />
 		<span>Minuten lange Slots im Zeitraum</span>
-		<n-date-picker type="datetimerange" class="mx-3" />
-		<n-button type="primary">Erstellen</n-button>
+		<n-date-picker v-model:value="batchCreateSlotsConfig.timeRange" type="datetimerange" class="mx-3" />
+		<n-button type="primary" @click="batchCreateSlots">Erstellen</n-button>
 	</div>
 
 	<div class="h-screen-md">
