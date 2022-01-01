@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/ash
 
 # fix permissions if needed
 chown nginx.nginx -R /app
 
+echo Starting nginx ...
 nginx
+echo Starting php8-fpm
 php-fpm8 -F
