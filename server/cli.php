@@ -45,12 +45,7 @@ if (php_sapi_name() == 'cli') {
 	$app->get('dbManager')->migrate();
 
 	echo 'Seeding ...'.PHP_EOL;
-	$db->insert('users', [
-		'id' => Helper::nanoid(),
-		'username' => 'mkuhlmann',
-		'email' => 'manuel@mkuhlmann.org',
-		'password' => password_hash('qwertz', PASSWORD_ARGON2ID)
-	]);
+
 
 	$id = 'test';
 	$db->insert('appointments', [
@@ -60,29 +55,4 @@ if (php_sapi_name() == 'cli') {
 		'longitude' => 6.864700,
 	]);
 
-	for ($i = 10; $i < 18; $i++) {
-		$db->insert('slots', [
-			'id' => Helper::nanoid(),
-			'slots' => 2,
-			'free' => 2,
-			'start' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-29 10:00:00')),
-			'end' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-29 10:30:00')),
-			'appointmentId' => $id,
-			'createdAt' => \dbdate(),
-			'updatedAt' => \dbdate()
-		]);
-	}
-
-	for ($i = 10; $i < 18; $i++) {
-		$db->insert('slots', [
-			'id' => Helper::nanoid(),
-			'slots' => 2,
-			'free' => mt_rand(0, 2),
-			'start' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-30 10:00:00')),
-			'end' => date('Y-m-d ' . $i . ':i:s', strtotime('2021-12-30 10:30:00')),
-			'appointmentId' => $id,
-			'createdAt' => \dbdate(),
-			'updatedAt' => \dbdate()
-		]);
-	}
 }

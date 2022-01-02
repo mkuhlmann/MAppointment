@@ -51,9 +51,14 @@ onMounted(async () => {
 			<n-result
 				v-if="showSuccessAlert"
 				status="success"
-				title="Termin gebucht"
+				title="Buchung bestätigt"
 				description="Sie erhalten eine Bestätigung per E-Mail."
 			></n-result>
+
+			<n-result
+				status="warning"
+				title="Bestätigung erforderlich"
+				description="Bitte bestätigen Sie die Buchung über den Link den Sie per E-Mail erhalten haben." />
 
 			<n-table>
 				<tbody>

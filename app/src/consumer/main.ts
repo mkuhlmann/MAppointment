@@ -4,9 +4,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import 'dayjs/locale/de';
-import 'vfonts/Lato.css'
-import 'vfonts/FiraCode.css'
 
+import 'vfonts/Lato.css';
 import 'virtual:windi.css';
 
 import IndexComponent from './components/Index.vue';

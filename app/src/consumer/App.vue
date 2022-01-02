@@ -17,12 +17,38 @@ const step = ref(1);
 	</n-config-provider>
 </template>
 
-<style scoped>
+<style>
 .page-container {
 	min-height: 100vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	
+}
+
+
+.vc-container.vc-is-dark {
+	background-color: rgb(16, 16, 20);
+	border-color: rgba(255, 255, 255, 0.09);
+}
+.booking-container {
+	width: 100vw;
+	max-width: 600px;
+}
+
+@media (min-width: 768px) {
+	.booking-container {
+		width: 80vw;
+	}
+}
+
+@media (min-width: 992px) {
+	.booking-container {
+		width: 60vw;
+	}
+}
+
+.n-card-header {
+	padding-bottom: 0 !important;
 }
 </style>

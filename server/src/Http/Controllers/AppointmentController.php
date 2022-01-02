@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helper;
+use App\Http\JsonNumericAwareResponse;
 use App\Http\ResourceNotFoundJsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -87,7 +88,7 @@ class AppointmentController
 		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
-		return new JsonResponse($appointment);
+		return new JsonNumericAwareResponse($appointment);
 	}
 
 	public function getAvailableDates(ServerRequestInterface $request, array $params): ResponseInterface

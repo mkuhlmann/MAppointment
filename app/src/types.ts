@@ -24,3 +24,16 @@ export type Slot = {
 	updatedAt: Date;
 	createdAt: Date;
 };
+
+export type Booking = {
+	id: string;
+	slotId: string;
+
+	firstName: string;
+	lastName: string;
+	email: string;
+	phone: string;
+
+	updatedAt: Date;
+	createdAt: Date;
+}

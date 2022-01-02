@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { h, ref, inject, Component } from 'vue';
-import { darkTheme, NConfigProvider, NCard, NLayout, NIcon, NText, NLayoutHeader, NMenu, NLayoutSider } from 'naive-ui';
+import { darkTheme, NConfigProvider, NMessageProvider, NLayout, NIcon, NText, NLayoutHeader, NMenu, NLayoutSider } from 'naive-ui';
 import DashboardIcon from '@vicons/carbon/Dashboard';
 import CalendarIcon from '@vicons/carbon/Calendar';
 import UserIcon from '@vicons/carbon/User';
@@ -42,40 +42,44 @@ const menuOptions = [
 
 <template>
 	<n-config-provider :theme="useDarkMode">
-		<n-layout position="absolute">
-			<n-layout-header
-				style="height: 64px; display: flex; align-items: center; padding: 0 32px;"
-				bordered
-			>
-				<n-text class="logo">MAppointment</n-text>
-				<div class="flex-grow"></div>
-				<div>
-					John Doe
-				</div>
-			</n-layout-header>
-			<n-layout has-sider position="absolute" style="top: 64px;">
-				<n-layout-sider
-					v-show="route.path != '/login'"
+		<n-message-provider>
+			<n-layout position="absolute">
+				<n-layout-header
+					style="height: 64px; display: flex; align-items: center; padding: 0 32px;"
 					bordered
-					collapse-mode="width"
-					:collapsed-width="64"
-					:width="240"
-					show-trigger
 				>
-					<n-menu :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
-				</n-layout-sider>
-				<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }">
-					<router-view></router-view>
+					<n-text class="logo">MAppointment</n-text>
+					<div class="flex-grow"></div>
+					<div>John Doe</div>
+				</n-layout-header>
+				<n-layout has-sider position="absolute" style="top: 64px;">
+					<n-layout-sider
+						v-show="route.path != '/login'"
+						bordered
+						collapse-mode="width"
+						:collapsed-width="64"
+						:width="240"
+						show-trigger
+					>
+						<n-menu :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
+					</n-layout-sider>
+					<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }">
+						<router-view></router-view>
+					</n-layout>
 				</n-layout>
 			</n-layout>
-		</n-layout>
+		</n-message-provider>
 	</n-config-provider>
 </template>
 
-<style scoped>
+<style>
 .logo {
 	display: block;
 	font-size: 20px;
 	font-weight: bold;
+}
+
+.link {
+	@apply text-teal-300 hover:text-teal-500 ease-in-out transition duration-200 cursor-pointer;
 }
 </style>

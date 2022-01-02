@@ -2,7 +2,7 @@
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
 import 'vue-cal/dist/drag-and-drop.js';
-import { NDatePicker, NInputNumber, NButton, NModal } from 'naive-ui';
+import { NDatePicker, NInputNumber, NButton, NModal, useMessage } from 'naive-ui';
 import SlotModal from '../components/Slot.vue';
 
 
@@ -14,6 +14,7 @@ import dayjs from 'dayjs';
 
 const slots = ref<Slot[]>([]);
 const api = useApi();
+const message = useMessage();
 
 const route = useRoute();
 
@@ -31,30 +32,45 @@ fetchSlots().then();
 
 
 const batchCreateSlotsConfig = ref({
-	timeRange: [dayjs().startOf('day').unix() * 1000, dayjs().endOf('day').unix() * 1000] as [number, number],
-	duration: 5
+	timeRange: [dayjs().startOf('hour').unix() * 1000, dayjs().endOf('hour').unix() * 1000] as [number, number],
+	duration: 30
 });
+
+const batchCreateSlotsStatus = ref(0);
 const batchCreateSlots = async function () {
 	const { timeRange, duration } = batchCreateSlotsConfig.value;
 
-	const minutesStart = Math.floor(timeRange[0] / 1000 / 60);
-	const minutesEnd = Math.floor(timeRange[1] / 1000 / 60);
+	const timeRangeStart = dayjs.unix(timeRange[0] / 1000);
+	const timeRangeEnd = dayjs.unix(timeRange[1] / 1000);
 
-	const slots = [];
-	for (let i = minutesStart; i < minutesEnd; i += duration) {
+	let currentDate = timeRangeStart;
+	let currentDateStart = currentDate;
+	let currentDateEnd = currentDate.hour(timeRangeEnd.hour()).minute(timeRangeEnd.minute()).second(timeRangeEnd.second());
+
+	let i = 0;
+	while (currentDate.isBefore(timeRangeEnd) && i++ < 1000) {
+		batchCreateSlotsStatus.value = i;
 
 		await api.$fetch(`/api/v1/appointments/${route.params.id}/slots`, {
 			method: 'POST',
 			body: {
 				slots: 1,
-				start: new Date(i * 60 * 1000),
-				end: new Date((i + duration) * 60 * 1000)
+				start: currentDate.toDate(),
+				end: currentDate.add(duration, 'minute').toDate()
 			}
 		});
+
+		currentDate = currentDate.add(duration, 'minute');
+
+		if (currentDate.isAfter(currentDateEnd)) {
+			currentDate = currentDateStart = currentDateStart.add(1, 'day');
+			currentDateEnd = currentDate.hour(timeRangeEnd.hour()).minute(timeRangeEnd.minute()).second(timeRangeEnd.second());
+		}
 	}
 
-	await fetchSlots();
+	batchCreateSlotsStatus.value = 0;
 
+	await fetchSlots();
 
 };
 
@@ -79,8 +95,15 @@ const onEventCreate = async function ($event: any) {
 	return true;
 };
 
+
 const onEventChange = function ($event: any) {
 	const event = $event.event;
+
+	if (event.title) {
+		message.error('Terminslot kann nicht geändert werden, da bereits Buchungen vorliegen.');
+		fetchSlots();
+		return;
+	}
 
 	if (event.id) {
 		api.$fetch(`/api/v1/slots/${event.id}`, {
@@ -92,6 +115,7 @@ const onEventChange = function ($event: any) {
 		});
 
 		console.debug(`${event.id} changed ${event.start} - ${event.end}`);
+		message.success('Terminslot geändert.');
 	}
 };
 
@@ -119,15 +143,19 @@ const modalClose = function () {
 
 	<div class="flex items-center">
 		<span>Erstelle</span>
-		<n-input-number v-model:value="batchCreateSlotsConfig.count" class="mx-3" />
+		<n-input-number v-model:value="batchCreateSlotsConfig.duration" class="mx-3" />
 		<span>Minuten lange Slots im Zeitraum</span>
 		<n-date-picker
 			v-model:value="batchCreateSlotsConfig.timeRange"
 			type="datetimerange"
 			class="mx-3"
 		/>
-		<n-button type="primary" @click="batchCreateSlots">Erstellen</n-button>
+		<n-button type="primary" @click="batchCreateSlots" :loading="batchCreateSlotsStatus > 0">Erstellen</n-button>
+		<span v-if="batchCreateSlotsStatus > 0">{{ batchCreateSlotsStatus }} Termine erstellt...</span>
 	</div>
+	<div
+		class="mb-5 mt-2 italic"
+	>Daten und Zeit werden seperat betrachtet, d.h. es wird an den jeweiligen Tagen jeweils Terminslots zwischen den Zeiten erstellt und nicht über Nacht.</div>
 
 	<div class="h-screen-md">
 		<vue-cal

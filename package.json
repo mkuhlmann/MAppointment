@@ -8,7 +8,7 @@
 		"dev": "concurrently \"npm run dev -w app\" \"npm run dev -w server\"",
 		"build": "npm run build -w app && npm run build -w server",
 		"start": "npm run start -w server",
-		"dev-setup": "./.dev-setup.sh"
+		"dev-setup": "./dev-setup.sh"
 	},
 	"devDependencies": {
 		"concurrently": "^6.5.1"

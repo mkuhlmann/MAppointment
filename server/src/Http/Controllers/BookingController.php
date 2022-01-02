@@ -31,6 +31,17 @@ class BookingController
 		return new JsonResponse($booking);
 	}
 
+	public function getLatestBookings(ServerRequestInterface $request): ResponseInterface	{
+		$bookings = $this->db->run('SELECT bookings.*, appointments.name, slots.appointmentId FROM bookings LEFT JOIN slots ON slots.id = bookings.slotId LEFT JOIN appointments ON appointments.id = slots.appointmentId ORDER BY bookings.createdAt DESC LIMIT 20');
+		return new JsonResponse($bookings);
+	}
+
+	public function getBookingStats(ServerRequestInterface $request): ResponseInterface
+	{
+		$stats = $this->db->run('SELECT count(*) as y, date(createdAt) as x FROM bookings WHERE createdAt > DATE_SUB(NOW(), INTERVAL 7 DAY) GROUP BY x');
+		return new JsonResponse($stats);
+	}
+
 	public function bookAppointment(ServerRequestInterface $request, array $params): ResponseInterface
 	{
 		$body = $request->getParsedBody();

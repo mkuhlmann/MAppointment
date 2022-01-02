@@ -6,10 +6,14 @@ import { useRouter, useRoute } from 'vue-router';
 import dayjs from 'dayjs';
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useTitle } from '@vueuse/core';
+
+import RenderMarkdown from '@/shared/components/RenderMarkdown.vue';
 
 import { useApi } from '@/shared/composables/api';
 import { Appointment } from '@/types';
 
+const windowTitle = useTitle();
 const api = useApi();
 
 const route = useRoute();
@@ -75,6 +79,8 @@ let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { th
 			return;
 		}
 
+		windowTitle.value = `${_appointment.name} – Terminbuchung`;
+
 		let _appointmentDates = await api.$fetch('/api/v1/appointments/' + route.params.id + '/available-dates');
 
 		let _dates = [];
@@ -135,8 +141,10 @@ const submitBooking = async function () {
 <template>
 	<n-spin :show="isLoading">
 		<n-card v-if="!isLoading" class="booking-container" :title="appointment.name" size="large">
-			<n-p>{{ appointment.description }}</n-p>
-
+			
+			<render-markdown v-if="appointment.description" :markdown="appointment.description" />
+			<div v-if="!appointment.description" class="mt-5"></div>
+			
 			<div v-if="step == -1">
 				<n-alert type="info">
 					Buchungen aktuell nicht möglich.
@@ -144,7 +152,7 @@ const submitBooking = async function () {
 			</div>
 
 			<div v-if="step == 1">
-				<Calendar
+				<calendar
 					:available-dates="availableDates"
 					:is-expanded="true"
 					:is-dark="$isDarkMode"
@@ -275,31 +283,8 @@ const submitBooking = async function () {
 
 			<n-space justify="space-between">
 				<n-text depth="3">Datenschutz &mdash; Impressum</n-text>
-				<n-text depth="3">Realisiert durch MAppointment</n-text>
+				<n-text depth="3">Realisiert durch <n-a href="https://github.com/mkuhlmann/MAppointment" target="_blank">MAppointment</n-a></n-text>
 			</n-space>
 		</n-card>
 	</n-spin>
 </template>
-
-<style scoped>
-.vc-container.vc-is-dark {
-	background-color: rgb(16, 16, 20);
-	border-color: rgba(255, 255, 255, 0.09);
-}
-.booking-container {
-	width: 100vw;
-	max-width: 600px;
-}
-
-@media (min-width: 768px) {
-	.booking-container {
-		width: 80vw;
-	}
-}
-
-@media (min-width: 992px) {
-	.booking-container {
-		width: 60vw;
-	}
-}
-</style>

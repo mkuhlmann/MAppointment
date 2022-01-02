@@ -13,15 +13,13 @@ class AuthController {
 	private EasyDB $db;
 	private Application $app;
 
-	/**
-	 * 
-	 * 
-	 */
 	public function __construct(EasyDB $db, Application $app)
 	{
 		$this->db = $db;
 		$this->app = $app;
 	}
+
+	
 	 /**
 	 * Controller.
 	 *
@@ -42,6 +40,26 @@ class AuthController {
 			], $_ENV['JWT_SECRET']);
 	
 			return new JsonResponse(['jwt' => $jwt]);
+		} else {
+			$userCount = $this->db->row('SELECT COUNT(*) as count FROM users');
+
+			if($userCount['count'] == 0) {
+				$id = \nanoid();
+
+				$this->db->insert('users', [
+					'id' => $id,
+					'username' => $username,
+					'email' => $username,
+					'password' => password_hash($password, PASSWORD_DEFAULT)
+				]);
+				
+				$jwt = $jwt = JWT::encode([
+					'sub' => $id,
+					'exp' =>  time() + 60 * 60 * 24
+				], $_ENV['JWT_SECRET']);
+
+				return new JsonResponse(['jwt' => $jwt, 'info' => 'First user created']);
+			}
 		}
 
 		return new JsonResponse(['error' => 'invalid credentials']);		
