@@ -35,7 +35,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 
 	// /appointments admin routes
 	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);
-	
+	$route->post('/appointments', [AppointmentController::class, 'createAppointment'])->middleware($auth);
 	$route->put('/appointments/{id}', [AppointmentController::class, 'updateAppointment'])->middleware($auth);
 	$route->get('/appointments/{id}/bookings', [AppointmentController::class, 'getBookings'])->middleware($auth);
 	

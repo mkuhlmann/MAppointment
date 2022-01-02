@@ -37,8 +37,16 @@ dayjs.extend(utc);
 
 const app = createApp(App);
 
+let $isDarkMode = false;
+if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+	document.documentElement.classList.add('dark');
+	$isDarkMode = true;
+} else {
+	document.documentElement.classList.remove('dark');
+}
+
 app.provide('$isMobileScreen', screen.width <= 760);
-app.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+app.provide('$isDarkMode', $isDarkMode);
 
 app
 	.use(createRouter({

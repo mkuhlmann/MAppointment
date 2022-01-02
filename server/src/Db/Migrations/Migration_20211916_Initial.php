@@ -16,7 +16,7 @@ class Migration_20211916_Initial implements MigrationInterface {
 	public function up(): void
 	{
 		$this->db->exec(
-			'CREATE TABLE appointments(
+			'CREATE TABLE appointments (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`name` varchar(255) NOT NULL,
 				`isActive` tinyint(1) NOT NULL DEFAULT 0,
@@ -25,13 +25,14 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`latitude` decimal(10,8),
 				`longitude` decimal(11,8),
 				`cancellationDeadline` int,
+				`requireMailValidation` tinyint(1) NOT NULL DEFAULT 0,
 				`requirePhoneNumber` tinyint(1) NOT NULL DEFAULT 0,
 				`canComment` tinyint(1) NOT NULL DEFAULT 1,
 				`createdAt` datetime,
 				`updatedAt` datetime
 			);
 			
-			CREATE TABLE slots(
+			CREATE TABLE slots (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`appointmentId` varchar(21) NOT NULL REFERENCES appointments (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				`slots` int NOT NULL,
@@ -42,7 +43,7 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`updatedAt` datetime
 			);
 			
-			CREATE TABLE bookings(
+			CREATE TABLE bookings (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`slotId` varchar(21) REFERENCES slots (`id`),
 				`secret` varchar(32) NOT NULL,
@@ -55,7 +56,7 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`updatedAt` datetime				
 			);
 			
-			CREATE TABLE users(
+			CREATE TABLE users (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`username` varchar(64) UNIQUE NOT NULL,
 				`email` varchar(64) UNIQUE NOT NULL,

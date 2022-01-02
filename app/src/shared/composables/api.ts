@@ -20,14 +20,9 @@ const login = async function (username: string, password: string, remember: bool
 	return false;
 };
 
-let user: { id: number; username: string; email: string };
-const getUser = async function () {
-	if (user) return user;
-	let _user = await $fetch('/api/v1/auth/user');
-	if (!_user.error) {
-		user = _user;
-	}
-	return _user;
+const logout = function () {
+	jwt = null;
+	localStorage.removeItem('jwt');
 };
 
 const $fetch = async function (url: RequestInfo, options: ApiRequestInit = {}) {
@@ -60,5 +55,5 @@ interface ApiRequestInit extends RequestInit {
 }
 
 export function useApi() {
-	return { login, isSignedIn, $fetch, getUser };
+	return { login, logout, isSignedIn, $fetch };
 };

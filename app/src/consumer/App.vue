@@ -9,7 +9,7 @@ const step = ref(1);
 
 <template>
 	<n-config-provider :theme="useDarkMode">
-		<n-layout position="absolute">
+		<n-layout class="n-layout" position="absolute">
 			<div class="page-container" v-bind:class="{ 'bg-gray-100': !$isDarkMode }">
 				<router-view></router-view>
 			</div>
@@ -19,18 +19,27 @@ const step = ref(1);
 
 <style>
 .page-container {
-	min-height: 100vh;
+	min-height: 100%;
 	display: flex;
 	justify-content: center;
-	align-items: center;
-	
+	align-items: center;	
 }
-
 
 .vc-container.vc-is-dark {
-	background-color: rgb(16, 16, 20);
-	border-color: rgba(255, 255, 255, 0.09);
+	background-color: rgb(16, 16, 20) !important;
+	border-color: rgba(255, 255, 255, 0.09)  !important;
 }
+
+@media (max-width: 768px) {
+	.booking-container {
+		border: none !important;
+	}
+
+	.n-layout {
+	background-color: rgb(24, 24, 28); 
+}
+}
+
 .booking-container {
 	width: 100vw;
 	max-width: 600px;

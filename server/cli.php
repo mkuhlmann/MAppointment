@@ -32,27 +32,27 @@ $container->addServiceProvider(new \App\ServiceProvider\RouteServiceProvider());
 $app = $container->get(\App\Application::class);
 
 if (php_sapi_name() == 'cli') {
-	/** CLI */
-
 	/** @var \ParagonIE\EasyDB\EasyDB $db */
+
 	$db = $app->get('db');
+	switch($argv[1] ?? null) {
+		case 'migrate':
+			echo 'Migrating ...'.PHP_EOL;
+			$app->get('dbManager')->migrate();
+			break;
+		case 'reset':			
+			echo 'Dropping tables ...'.PHP_EOL;
+			$db->exec('DROP TABLE IF EXISTS bookings; DROP TABLE IF EXISTS slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users; DELETE FROM _migrations;');
+			echo 'Migrating ...'.PHP_EOL;
+			$app->get('dbManager')->migrate();
+			break;
+		default:
+			echo 'No command specified.'.PHP_EOL;
+			echo 'Usage: php cli.php [migrate|reset]'.PHP_EOL;
+			echo 'migrate: Migrates the database'.PHP_EOL;
+			echo 'reset: Drops all tables and migrates the database'.PHP_EOL;
+			break;
+	}
 
-	
-	echo 'Clearing database ...'.PHP_EOL;
-	$db->exec('DROP TABLE IF EXISTS bookings; DROP TABLE IF EXISTS slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users; DELETE FROM _migrations;');
-
-	echo 'Migrating ...'.PHP_EOL;
-	$app->get('dbManager')->migrate();
-
-	echo 'Seeding ...'.PHP_EOL;
-
-
-	$id = 'test';
-	$db->insert('appointments', [
-		'id' => $id,
-		'name' => 'Grippeschutzimpfung 2021 Aekno',
-		'latitude' => 51.224150,
-		'longitude' => 6.864700,
-	]);
 
 }

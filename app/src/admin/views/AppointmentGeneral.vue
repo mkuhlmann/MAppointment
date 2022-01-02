@@ -20,7 +20,6 @@ const appointment = ref<Partial<Appointment>>({});
 
 api.$fetch(`/api/v1/appointments/${route.params.id}`).then(res => {
 	appointment.value = res;
-	console.log(res);
 });
 
 
@@ -60,7 +59,7 @@ const onAppointmentBlur = async function () {
 				</n-form-item>
 			</div>
 
-			<n-form-item label="Beschreibung">
+			<n-form-item label="Beschreibung (Markdown)">
 				<n-input type="textarea" v-model:value="appointment.description" @blur="onAppointmentBlur" />
 			</n-form-item>
 
@@ -69,12 +68,22 @@ const onAppointmentBlur = async function () {
 					<n-input v-model:value="appointment.location" @blur="onAppointmentBlur" />
 				</n-form-item>
 
-				<n-form-item label="Längengrad">
+				<n-form-item label="Längengrad (für Karte)">
 					<n-input-number v-model:value="appointment.longitude" @blur="onAppointmentBlur" />
 				</n-form-item>
 
-				<n-form-item label="Breitengrad">
+				<n-form-item label="Breitengrad (für Karte)">
 					<n-input-number v-model:value="appointment.latitude" @blur="onAppointmentBlur" />
+				</n-form-item>
+			</div>
+
+			<div class="flex gap-5">
+				<n-form-item label="Erfordere E-Mail Bestätigung">
+					<n-switch v-model:value="appointment.requireMailValidation" :checked-value="1" @blur="onAppointmentBlur" />
+				</n-form-item>
+
+				<n-form-item label="Erfordere Telefonnummer">
+					<n-switch v-model:value="appointment.requirePhoneNumber" :checked-value="1" @blur="onAppointmentBlur" />
 				</n-form-item>
 			</div>
 		</n-form>

@@ -16,6 +16,7 @@ import LoginComponent from './views/Login.vue';
 import DashboardComponent from './views/Dashboard.vue';
 
 import { useApi } from '@/shared/composables/api';
+import { fetchUser } from './composables/user';
 
 const routes: RouteRecordRaw[] = [
 	{
@@ -30,31 +31,34 @@ const routes: RouteRecordRaw[] = [
 	},
 	{
 		path: '/appointments',
-		name: 'Appointments',
+		name: 'Events',
 		component: AppointmentsComponent
 	},
 	{
 		path: '/appointments/:id',
-		name: 'Appointment',
+		name: 'Event',
 		component: () => import('./views/Appointment.vue'),
 		children: [
 			{
 				path: '',
+				name: 'EventOverview',
 				component: () => import('./views/AppointmentGeneral.vue')
-			}, 
+			},
 			{
 				path: 'slots',
+				name: 'EventSlots',
 				component: () => import('./views/AppointmentSlots.vue')
 			},
 			{
 				path: 'bookings',
+				name: 'EventBookings',
 				component: () => import('./views/AppointmentBookings.vue')
 			}
 		]
 	},
 	{
 		path: '/',
-		name:'Dashboard',
+		name: 'Dashboard',
 		component: DashboardComponent
 	}
 ];
@@ -71,14 +75,15 @@ const router = createRouter({
 	history: (import.meta.env.MODE == 'development') ? createWebHashHistory() : createWebHistory('/admin'),
 	routes,
 });
+
 vueApp
 	.use(router)
 	.mount('#app');
 
-(async function() {
-	const { isSignedIn, getUser } = useApi();
+(async function () {
+	const { isSignedIn } = useApi();
 
-	if (!isSignedIn() || (await getUser()).error) {
+	if (!isSignedIn() || (await fetchUser()).error) {
 		router.push('/login');
 	}
 

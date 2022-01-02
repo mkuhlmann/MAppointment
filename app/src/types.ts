@@ -5,6 +5,8 @@ export type Appointment = {
 
 	description: string;
 	canComment: boolean;
+	requireMailValidation: boolean;
+	requirePhoneNumber: boolean;
 
 	location: string;
 	longitude?: number;

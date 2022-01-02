@@ -9,6 +9,8 @@
 
 ## Deploying
 
+The admin user is created on first login automatically.
+
 ### Via Docker
 
 Example `docker-compose.yml` file:	

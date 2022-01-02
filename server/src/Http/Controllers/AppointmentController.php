@@ -12,7 +12,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\ServerRequest;
 use ParagonIE\EasyDB\EasyDB;
-use Rakit\Validation\Validator;
 
 class AppointmentController
 {
@@ -24,6 +23,20 @@ class AppointmentController
 	}
 
 	/** Admin Routes */
+	public function createAppointment(ServerRequestInterface $request): ResponseInterface
+	{
+		$body = $request->getParsedBody();
+
+		$id = \nanoid();	
+			
+		$this->db->insert('appointments', [
+			'id' => $id,
+			'name' => $body['name'] ?? 'New Appointment',
+		]);
+
+		return new JsonResponse($this->db->row('SELECT * FROM appointments WHERE id = ?', $id));
+	}
+
 	public function getAppointments(ServerRequestInterface $request, array $params): ResponseInterface
 	{
 		$appointments = $this->db->run('SELECT * FROM appointments');
@@ -43,6 +56,8 @@ class AppointmentController
 				'name' => $body['name'],
 				'description' => $body['description'],
 				'isActive' => $body['isActive'] ? 1 : 0,
+				'requireMailValidation' => $body['requireMailValidation'] ? 1 : 0,
+				'requirePhoneNumber' => $body['requirePhoneNumber'] ? 1 : 0,
 				'updatedAt' => \dbdate()
 			],
 			['id' => $params['id']]
@@ -96,7 +111,7 @@ class AppointmentController
 		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
-		$result = $this->db->run('SELECT DATE_FORMAT(start, \'%Y-%m-%d\') as start, sum(free) as free FROM slots WHERE free > 0 GROUP BY DATE(start)');
+		$result = $this->db->run('SELECT DATE_FORMAT(start, \'%Y-%m-%d\') as start, sum(free) as free FROM slots WHERE free > 0 AND start > now() GROUP BY DATE(start)');
 		return new JsonResponse($result);
 	}	
 
@@ -108,11 +123,11 @@ class AppointmentController
 
 	public function getAvailableSlots(ServerRequestInterface $request, array $params): ResponseInterface
 	{
-		if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $params['date']) !== 1)	return new ResourceNotFoundJsonResponse();
+		if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $params['date']) !== 1) return new ResourceNotFoundJsonResponse();
 		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
-		$result = $this->db->run('SELECT id, start, end FROM slots WHERE free > 0 AND start >= ? AND start <= ? ORDER BY start ASC', $params['date'] . ' 00:00:00', $params['date'] . ' 23:59:59');
+		$result = $this->db->run('SELECT id, start, end FROM slots WHERE free > 0 AND start >= ? AND start <= ? AND start > now() ORDER BY start ASC', $params['date'] . ' 00:00:00', $params['date'] . ' 23:59:59');
 		return new JsonResponse($result);
 	}
 }

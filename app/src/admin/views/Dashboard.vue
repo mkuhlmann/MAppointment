@@ -45,6 +45,7 @@ api.$fetch(`/api/v1/bookings/latest`).then((res: any) => {
 	bookings.value = res;
 });
 
+const bookingStatsLoading = ref(true);
 const bookingStatsRawData = ref([]);
 const bookingStatsChartOptions = {
 	scales: {
@@ -70,6 +71,7 @@ const bookingStatsChartData = computed(() => ({
 
 api.$fetch(`/api/v1/bookings/stats`).then((res: any) => {
 	bookingStatsRawData.value = res;
+	bookingStatsLoading.value = false;
 });
 
 </script>
@@ -81,7 +83,7 @@ api.$fetch(`/api/v1/bookings/stats`).then((res: any) => {
 				<n-data-table :columns="bookingsColumns" :data="bookings" :pagination="false" />
 			</n-card>
 
-			<n-spin class="flex-1" :show="bookingStatsRawData.length == 0">
+			<n-spin class="flex-1" :show="bookingStatsLoading">
 				<n-card title="Buchungen (letzte 7 Tage)">
 					<line-chart :chart-data="bookingStatsChartData" :options="bookingStatsChartOptions" />
 				</n-card>

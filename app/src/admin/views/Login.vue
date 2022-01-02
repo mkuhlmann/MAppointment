@@ -3,6 +3,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { NCard, NForm, NFormItem, NInput, NButton, NCheckbox, NAlert, NSpace } from 'naive-ui';
 import { useApi } from '@/shared/composables/api';
 import { useRouter } from 'vue-router';
+import { fetchUser } from '../composables/user';
 
 const api = useApi();
 const router = useRouter();
@@ -14,6 +15,7 @@ const isLoading = ref(false);
 const login = async function () {
 	isLoading.value = true;
 	if(await api.login(credentials.username, credentials.password, credentials.remember)) {
+		await fetchUser();
 		router.push('/');
 	} else {
 		loginFailed.value = true;
@@ -22,7 +24,7 @@ const login = async function () {
 };
 
 onMounted(async () => {
-	if(api.isSignedIn() &&  !(await api.getUser()).error) {
+	if(api.isSignedIn() &&  !(await fetchUser()).error) {
 		router.push('/');
 	}
 });

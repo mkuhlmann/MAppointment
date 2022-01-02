@@ -26,11 +26,20 @@ const isLoading = ref(true);
 const slotsLoading = ref(false);
 
 const booking = ref({
-	firstName: 'a',
-	lastName: 'b',
-	email: 'a@a.de',
+	firstName: '',
+	lastName: '',
+	email: '',
 	comment: ''
 });
+
+if(import.meta.env.MODE == 'development') {
+	booking.value = {
+		firstName: 'John',
+		lastName: 'Doe',
+		email: 'john.doe@example.com',
+		comment: 'Example comment with emoji 🤓'
+	};
+}
 
 const bookingFormRef = ref<HTMLFormElement>();
 
@@ -128,19 +137,18 @@ const submitBooking = async function () {
 
 	if (response.success) {
 		router.push(`/booking/${response.bookingId}?e=s`);
+	} else {		
+		isLoading.value = false;
 	}
 
 	bookingResponse.value = response;
-
-	isLoading.value = false;
-
 };
 
 </script>
 
 <template>
 	<n-spin :show="isLoading">
-		<n-card v-if="!isLoading" class="booking-container" :title="appointment.name" size="large">
+		<n-card v-if="!isLoading" class="booking-container sm:border-0" :title="appointment.name" size="large">
 			
 			<render-markdown v-if="appointment.description" :markdown="appointment.description" />
 			<div v-if="!appointment.description" class="mt-5"></div>
@@ -226,7 +234,7 @@ const submitBooking = async function () {
 					v-on:click="submitBookingForm"
 				>Weiter</n-button>
 
-				<n-a class="mt-2" v-on:click="step--">Zurück</n-a>
+				<n-a class="mt-2" v-on:click="step = 1">Zurück</n-a>
 			</div>
 
 			<div v-if="step == 3">
@@ -258,6 +266,10 @@ const submitBooking = async function () {
 							<td>Zeit</td>
 							<td>{{ dayjs(chosenSlot.start).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.end).format('HH:mm') }}</td>
 						</tr>
+						<tr>
+							<td>Kommentar</td>
+							<td>{{ booking.comment }}</td>
+						</tr>
 					</tbody>
 				</n-table>
 
@@ -268,7 +280,7 @@ const submitBooking = async function () {
 					v-on:click="submitBooking"
 				>Jetzt verbindlich buchen.</n-button>
 
-				<n-a class="mt-2" v-on:click="step = 2">Zurück</n-a>
+				<n-a class="mt-2" v-on:click="step = 2; bookingResponse.error = null;">Zurück</n-a>
 			</div>
 
 			<n-divider />
