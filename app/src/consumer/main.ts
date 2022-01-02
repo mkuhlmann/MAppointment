@@ -43,7 +43,7 @@ app.provide('$isDarkMode', window.matchMedia && window.matchMedia('(prefers-colo
 
 app
 	.use(createRouter({
-		history: createWebHistory((import.meta.env.MODE == 'development') ? '/app/' : '/'),
+		history: createWebHistory('/'),
 		routes,
 	}))
 	.mount('#app');

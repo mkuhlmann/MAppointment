@@ -45,7 +45,7 @@ onMounted(async () => {
 					/>
 				</n-form-item>
 				<n-form-item item path="remember" label="Angemeldet bleiben">
-					<n-checkbox v-model="credentials.remember" />
+					<n-checkbox v-model:checked="credentials.remember" />
 				</n-form-item>
 
 				<n-alert v-if="loginFailed" class="mb-8" type="error">

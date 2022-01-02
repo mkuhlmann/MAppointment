@@ -1,4 +1,3 @@
-let baseUrl = 'http://localhost:8080';
 
 let jwt: string | null = null;
 if (localStorage.getItem('jwt')) {
@@ -32,7 +31,6 @@ const getUser = async function () {
 };
 
 const $fetch = async function (url: RequestInfo, options: ApiRequestInit = {}) {
-	url = `${baseUrl}${url}`;
 	if (!options.headers) options.headers = new Headers();
 	else if (typeof options.headers == 'object') options.headers = new Headers(options.headers);
 

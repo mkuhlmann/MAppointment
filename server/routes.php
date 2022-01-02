@@ -44,8 +44,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	// /appointments public routes
 	$route->get('/appointments/{id}', [AppointmentController::class, 'getAppointment']);
 	$route->get('/appointments/{id}/available-dates', [AppointmentController::class, 'getAvailableDates']);
-	$route->get('/appointments/{id}/available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);#
-
+	$route->get('/appointments/{id}/available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);
 
 	$route->get('/appointments/{id}/slots', [AppointmentController::class, 'getSlots']);
 	
@@ -56,10 +55,6 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->post('/bookings', [BookingController::class, 'bookAppointment']);
 	$route->get('/bookings/{id}', [BookingController::class, 'getBooking']);
 
-
-	$route->post('/debug', function (ServerRequestInterface $request): ResponseInterface {
-		return new TextResponse(print_r($request->getBody()->__toString(), true));
-	});
 })->middleware(new CorsMiddleware());
 
 $router->map('GET', '/admin/{any:.*}', function (ServerRequestInterface $request): ResponseInterface {

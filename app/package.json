@@ -2,7 +2,8 @@
   "name": "mappointment-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite",		
+		"test": "echo \"Error: no test specified\" && exit 1",
     "build": "vue-tsc --noEmit && vite build --emptyOutDir",
     "serve": "vite preview"
   },
@@ -21,9 +22,7 @@
     "vue": "^3.2.6",
     "vue-router": "^4.0.11",
     "vue-tsc": "^0.29.8",
-    "windicss": "^3.4.0"
-  },
-  "dependencies": {
+    "windicss": "^3.4.0",		
     "vue-cal": "^4.2.0"
   }
 }

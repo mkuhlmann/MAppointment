@@ -5,32 +5,34 @@ import WindiCSS from 'vite-plugin-windicss';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [vue(), WindiCSS()],
-    base: '/',
+	plugins: [vue(), WindiCSS()],
+	base: '/',
 	resolve: {
 		alias: {
 			'@': resolve(__dirname, './src'),
 		}
 	},
-    build: {
-        outDir: '../server/public',
-        rollupOptions: {
-            input: {
-                consumer: resolve(__dirname, 'index.html'),
-                admin: resolve(__dirname, 'admin/index.html')
-            },
+	server: {
+		proxy: {
+			'/api': {
+				target: 'http://localhost:8080',
+			}
+		}
+	},
+	build: {
+		outDir: '../server/public',
+		rollupOptions: {
+			input: {
+				consumer: resolve(__dirname, 'index.html'),
+				admin: resolve(__dirname, 'admin/index.html')
+			},
 			output: {
 				manualChunks(id) {
-					if(id.includes('naive')) {
+					if (id.includes('naive')) {
 						return 'naive';
 					}
 				}
 			}
-        }
-    },
-    server: {
-        watch: {
-            usePolling: true
-        }
-    }
+		}
+	}
 })
