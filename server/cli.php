@@ -42,7 +42,7 @@ if (php_sapi_name() == 'cli') {
 			break;
 		case 'reset':			
 			echo 'Dropping tables ...'.PHP_EOL;
-			$db->exec('DROP TABLE IF EXISTS bookings; DROP TABLE IF EXISTS slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users; DELETE FROM _migrations;');
+			$db->exec('DROP TABLE IF EXISTS bookings; DROP TABLE IF EXISTS slots; DROP TABLE IF EXISTS appointments; DROP TABLE IF EXISTS users;DROP TABLE IF EXISTS organizations; DELETE FROM _migrations;');
 			echo 'Migrating ...'.PHP_EOL;
 			$app->get('dbManager')->migrate();
 			break;

@@ -36,6 +36,16 @@ class SlotController
 		return new JsonResponse($slot);
 	}
 
+	public function deleteSlot(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$count = $this->db->row('SELECT COUNT(*) as count FROM bookings WHERE slotId = ?', $params['id']);
+		if($count['count'] > 0) {
+			return new JsonResponse(['error' => 'Bookings exists for this slot'], 400);
+		}
+		$this->db->delete('slots', ['id' => $params['id']]);
+		return new JsonResponse(['success' => true]);
+	}
+
 	public function updateSlot(ServerRequestInterface $request, array $params): ResponseInterface
 	{
 		$slot = $this->db->row('SELECT * FROM slots WHERE id = ?', $params['id']);

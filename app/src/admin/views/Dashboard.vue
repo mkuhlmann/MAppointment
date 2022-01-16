@@ -63,7 +63,7 @@ const bookingStatsChartData = computed(() => ({
 	datasets: [
 		{
 			fill: false,
-			borderColor: 'rgb(75, 192, 192)',
+			borderColor: 'rgb(94, 234, 212)',
 			data: bookingStatsRawData.value
 		}
 	]

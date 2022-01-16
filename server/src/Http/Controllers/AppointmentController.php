@@ -31,6 +31,7 @@ class AppointmentController
 			
 		$this->db->insert('appointments', [
 			'id' => $id,
+			'organizationId' => app()->get('user')['organizationId'],
 			'name' => $body['name'] ?? 'New Appointment',
 		]);
 

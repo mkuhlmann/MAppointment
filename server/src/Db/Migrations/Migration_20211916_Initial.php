@@ -16,11 +16,20 @@ class Migration_20211916_Initial implements MigrationInterface {
 	public function up(): void
 	{
 		$this->db->exec(
-			'CREATE TABLE appointments (
+			'CREATE TABLE organizations (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
+				`name` varchar(255) NOT NULL,
+				`createdAt` datetime,
+				`updatedAt` datetime
+			);
+
+			CREATE TABLE appointments (
+				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
+				`organizationId` varchar(21) NOT NULL REFERENCES organizations (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				`name` varchar(255) NOT NULL,
 				`isActive` tinyint(1) NOT NULL DEFAULT 0,
 				`description` text,
+				`mailText` text,
 				`location` varchar(128),
 				`latitude` decimal(10,8),
 				`longitude` decimal(11,8),
@@ -52,16 +61,22 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`email` varchar(255),
 				`comment` text,
 				`mailSentAt` datetime,
+				`mailConfirmedAt` datetime,
 				`createdAt` datetime,
 				`updatedAt` datetime				
 			);
-			
+
 			CREATE TABLE users (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
+				`organizationId` varchar(21) NOT NULL REFERENCES organizations (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+				`isSuperAdmin` tinyint(1) NOT NULL DEFAULT 0,
 				`username` varchar(64) UNIQUE NOT NULL,
 				`email` varchar(64) UNIQUE NOT NULL,
-				`password` varchar(255) NOT NULL
+				`password` varchar(255) NOT NULL,
+				`createdAt` datetime,
+				`updatedAt` datetime	
 			);
+			
 		');
 	}
 

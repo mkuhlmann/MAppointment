@@ -94,7 +94,7 @@ let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { th
 
 		let _dates = [];
 		for (let date of _appointmentDates) {
-			_dates.push(dayjs(date.start).toDate());
+			_dates.push(dayjs.utc(date.start).toDate());
 		}
 		availableDates.value = _dates;
 		isLoading.value = false;
@@ -172,7 +172,7 @@ const submitBooking = async function () {
 					Verfügbare Termine
 					<span
 						v-if="availableSlots.length > 0"
-					>am {{ dayjs(chosenDate).format('dddd, DD.MM.YYYY') }}</span>
+					>am {{ dayjs.utc(chosenDate).local().format('dddd, DD.MM.YYYY') }}</span>
 				</n-h2>
 
 				<n-p v-if="availableSlots.length == 0">Bitte Datum auswählen.</n-p>
@@ -183,7 +183,7 @@ const submitBooking = async function () {
 						:key="slot.id"
 						:type="chosenSlot.id == slot.id ? 'success' : 'default'"
 						v-on:click="chosenSlot = slot"
-					>{{ dayjs(slot.start).format('HH:mm') }} &mdash; {{ dayjs(slot.end).format('HH:mm') }}</n-button>
+					>{{ dayjs.utc(slot.start).local().format('HH:mm') }} &mdash; {{ dayjs.utc(slot.end).local().format('HH:mm') }}</n-button>
 				</n-space>
 
 				<n-spin size="large" v-if="slotsLoading" />
@@ -202,11 +202,11 @@ const submitBooking = async function () {
 					<tbody>
 						<tr>
 							<td>Termin</td>
-							<td>{{ dayjs(chosenSlot.start).format('dddd, DD.MM.YYYY') }}</td>
+							<td>{{ dayjs.utc(chosenSlot.start).local().format('dddd, DD.MM.YYYY') }}</td>
 						</tr>
 						<tr>
 							<td>Zeit</td>
-							<td>{{ dayjs(chosenSlot.start).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.end).format('HH:mm') }}</td>
+							<td>{{ dayjs.utc(chosenSlot.start).local().format('HH:mm') }} &mdash; {{ dayjs.utc(chosenSlot.end).local().format('HH:mm') }}</td>
 						</tr>
 					</tbody>
 				</n-table>
@@ -260,11 +260,11 @@ const submitBooking = async function () {
 						</tr>
 						<tr>
 							<td>Termin</td>
-							<td>{{ dayjs(chosenSlot.start).format('dddd, DD.MM.YYYY') }}</td>
+							<td>{{ dayjs.utc(chosenSlot.start).local().format('dddd, DD.MM.YYYY') }}</td>
 						</tr>
 						<tr>
 							<td>Zeit</td>
-							<td>{{ dayjs(chosenSlot.start).format('HH:mm') }} &mdash; {{ dayjs(chosenSlot.end).format('HH:mm') }}</td>
+							<td>{{ dayjs.utc(chosenSlot.start).local().format('HH:mm') }} &mdash; {{ dayjs.utc(chosenSlot.end).local().format('HH:mm') }}</td>
 						</tr>
 						<tr>
 							<td>Kommentar</td>

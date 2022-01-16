@@ -52,6 +52,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->get('/slots/{id}/bookings', [SlotController::class, 'getBookings'])->middleware($auth);
 
 	$route->put('/slots/{id}', [SlotController::class, 'updateSlot'])->middleware($auth);
+	$route->delete('/slots/{id}', [SlotController::class, 'deleteSlot'])->middleware($auth);
 
 	$route->post('/bookings', [BookingController::class, 'bookAppointment']);
 	$route->get('/bookings/latest', [BookingController::class, 'getLatestBookings'])->middleware($auth);

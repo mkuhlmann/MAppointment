@@ -7,7 +7,7 @@ defineProps<{}>()
 </script>
 
 <template>
-    <n-result status="404" title="404 Not Found" description="Seite nicht geunden." />
+    <n-result status="info" title="404 &mdash; Nicht gefunden." description="MAppointment" />
 </template>
 
 <style scoped>

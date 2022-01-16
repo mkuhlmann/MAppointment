@@ -45,12 +45,23 @@ class AuthController {
 
 			if($userCount['count'] == 0) {
 				$id = \nanoid();
+				$orgId = \nanoid();
+
+				$this->db->insert('organizations', [
+					'id' => $orgId,
+					'name' => 'My Organization',
+					'createdAt' => \dbdate(),
+					'updatedAt' => \dbdate()
+				]);
 
 				$this->db->insert('users', [
 					'id' => $id,
+					'organizationId' => $orgId,
 					'username' => $username,
 					'email' => $username,
-					'password' => password_hash($password, PASSWORD_DEFAULT)
+					'password' => password_hash($password, PASSWORD_DEFAULT),
+					'createdAt' => \dbdate(),
+					'updatedAt' => \dbdate()
 				]);
 				
 				$jwt = $jwt = JWT::encode([
