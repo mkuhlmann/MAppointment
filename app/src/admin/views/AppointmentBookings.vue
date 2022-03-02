@@ -2,7 +2,7 @@
 import { useApi } from '@/shared/composables/api';
 import { DataTableColumns, NDataTable, NButton, NIcon } from 'naive-ui';
 import DocumentDownloadIcon from '@vicons/carbon/DocumentDownload'
-import { ref } from 'vue';
+import { ref,h } from 'vue';
 import { useRoute } from 'vue-router';
 import { Booking, Slot } from '@/types';
 
@@ -11,9 +11,10 @@ const route = useRoute();
 
 const bookings = ref<(Partial<Slot> & Booking)[]>([]);
 
-api.$fetch(`/api/v1/appointments/${route.params.id}/bookings`).then(res => {
-	bookings.value = res;
-});
+const fetchBookings = async () => {
+	let _bookings = await api.$fetch(`/api/v1/appointments/${route.params.id}/bookings`);
+	bookings.value = _bookings;
+};
 
 const bookingsColumns = [
 	{
@@ -35,6 +36,25 @@ const bookingsColumns = [
 	{
 		title: 'Buchungszeit',
 		key: 'createdAt'
+	},
+	{
+		title: 'E-Mail versandt',
+		key: 'emailSent'
+	},
+	{
+		title: 'E-Mail bestätigt',
+		key: 'emailConfirmed'
+	},
+	{
+		title: 'Aktionen',
+		key: 'actions',
+		render: (row) => {
+			return h(NButton, {
+				size: 'small', onClick: () => {
+					api.$fetch(`/api/v1/bookings/${row.id}/resend-mail`).then(() => fetchBookings());
+				}
+			}, { default: () => 'E-Mail erneut senden' });
+		}
 	}
 ] as DataTableColumns;
 
@@ -55,6 +75,8 @@ const downloadCsv = function() {
 	link.click();
 	document.body.removeChild(link);
 };
+
+fetchBookings().then();
 
 </script>
 

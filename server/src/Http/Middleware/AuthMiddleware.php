@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Application;
+use App\Models\User;
 use Firebase\JWT\JWT;
 use Laminas\Diactoros\Response\JsonResponse;
 use ParagonIE\EasyDB\EasyDB;
@@ -45,14 +46,13 @@ class AuthMiddleware implements MiddlewareInterface
 			return new JsonResponse(['error' => 'invalid token'], 401);
 		}
 
-		$user = $this->db->row('SELECT * FROM users WHERE id = ?', $decoded->sub);
+		$user = User::find($decoded->sub);
 
 		if (empty($user)) {
 			return new JsonResponse(['error' => 'invalid user'], 401);
 		}
 
 		$this->app->set('user', $user);
-
 		$response = $handler->handle($request);
 
 		return $response;

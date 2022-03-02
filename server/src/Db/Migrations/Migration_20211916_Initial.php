@@ -29,14 +29,22 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`name` varchar(255) NOT NULL,
 				`isActive` tinyint(1) NOT NULL DEFAULT 0,
 				`description` text,
-				`mailText` text,
+
 				`location` varchar(128),
 				`latitude` decimal(10,8),
 				`longitude` decimal(11,8),
+
 				`cancellationDeadline` int,
+
+				`mailSender` varchar(255),
+				`mailSenderName` varchar(255),
+				`mailSubject` varchar(255),
+				`mailBody` text,
+
 				`requireMailValidation` tinyint(1) NOT NULL DEFAULT 0,
 				`requirePhoneNumber` tinyint(1) NOT NULL DEFAULT 0,
 				`canComment` tinyint(1) NOT NULL DEFAULT 1,
+
 				`createdAt` datetime,
 				`updatedAt` datetime
 			);
@@ -55,7 +63,7 @@ class Migration_20211916_Initial implements MigrationInterface {
 			CREATE TABLE bookings (
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`slotId` varchar(21) REFERENCES slots (`id`),
-				`secret` varchar(32) NOT NULL,
+				`secret` varchar(21) NOT NULL,
 				`firstName` varchar(255),
 				`lastName` varchar(255),
 				`email` varchar(255),
@@ -82,6 +90,6 @@ class Migration_20211916_Initial implements MigrationInterface {
 
 	public function down(): void
 	{
-
+		$this->db->exec('DROP TABLE users, bookings, slots, appointments, organizations');
 	}
 }

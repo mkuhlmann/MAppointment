@@ -6,6 +6,7 @@ import { useRouter, useRoute } from 'vue-router';
 import dayjs from 'dayjs';
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'v-calendar/dist/style.css';
 import { useTitle } from '@vueuse/core';
 
 import RenderMarkdown from '@/shared/components/RenderMarkdown.vue';

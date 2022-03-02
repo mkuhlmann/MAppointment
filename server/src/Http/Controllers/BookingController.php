@@ -6,10 +6,12 @@ namespace App\Http\Controllers;
 
 use App\Helper;
 use App\Http\ResourceNotFoundJsonResponse;
+use App\Models\Appointment;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use ParagonIE\EasyDB\EasyDB;
+use PHPMailer\PHPMailer\PHPMailer;
 use Rakit\Validation\Validator;
 
 class BookingController
@@ -63,7 +65,7 @@ class BookingController
 		$appointmentId = $body['appointmentId'];
 		$slotId = $body['slotId'];
 
-		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $appointmentId);
+		$appointment = Appointment::find($appointmentId);
 		$slot = $this->db->row('SELECT * FROM slots WHERE id = ?', $slotId);
 
 		if ($appointment === null || $slot === null || $body['appointmentId'] !== $appointment['id']) {
@@ -83,9 +85,10 @@ class BookingController
 		}
 
 		$bookingId = Helper::nanoid();
+		$bookingSecret = Helper::nanoid();
 		$this->db->insert('bookings', [
 			'id' => $bookingId,
-			'secret' => Helper::nanoid(),
+			'secret' => $bookingSecret,
 			'slotId' => $slotId,
 			'firstName' => $body['firstName'],
 			'lastName' => $body['lastName'],
@@ -101,6 +104,26 @@ class BookingController
 			'id' => $slotId
 		]);
 
+		// send mail confirmation
+		$mailer = $this->getMailer();
+		$mailer->addAddress($body['email'], $body['firstName'] . ' ' . $body['lastName']);
+		
+		
+
+
 		return new JsonResponse(['success' => 'Booking successful', 'bookingId' => $bookingId]);
+	}
+
+	private function getMailer() {
+		$mailer = new PHPMailer();
+		$mailer->isSMTP();
+		$mailer->Host = $_ENV['SMTP_HOST'];
+		$mailer->SMTPAuth = true;
+		$mailer->Username = $_ENV['SMTP_USER'];
+		$mailer->Password = $_ENV['SMTP_PASSWORD'];
+		$mailer->SMTPSecure = $_ENV['SMTP_ENCRYPTION'];
+		$mailer->Port = $_ENV['SMTP_PORT'];
+
+		return $mailer;
 	}
 }

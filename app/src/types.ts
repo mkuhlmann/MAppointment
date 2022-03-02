@@ -12,6 +12,11 @@ export type Appointment = {
 	longitude?: number;
 	latitude?: number;
 
+	mailSender?: string;
+	mailSenderName?: string;
+	mailSubject?: string;
+	mailBody?: string;
+
 	updatedAt: Date;
 	createdAt: Date;
 };

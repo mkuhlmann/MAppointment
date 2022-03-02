@@ -13,7 +13,6 @@ const router = useRouter();
 const route = useRoute();
 const message = useMessage();
 
-
 const slot = ref<Partial<Slot>>({});
 const appointment = ref<Partial<Appointment>>({});
 
@@ -22,24 +21,21 @@ api.$fetch(`/api/v1/appointments/${route.params.id}`).then(res => {
 	appointment.value = res;
 });
 
-
-
 const onAppointmentBlur = async function () {
-
 	await api.$fetch(`/api/v1/appointments/${route.params.id}`, {
 		method: 'PUT',
 		body: appointment.value
 	});
 
 	message.success('Termin aktualisiert.');
-
-
 };
-
 </script>
 
 <template>
 	<div class="flex flex-col">
+		
+
+		<n-text :italic="true">Änderungen werden automatisch gespeichert.</n-text>
 		<div class="flex items-center">
 			<n-h2 class="flex-grow">{{ appointment.name }}</n-h2>
 		</div>
@@ -86,9 +82,33 @@ const onAppointmentBlur = async function () {
 					<n-switch v-model:value="appointment.requirePhoneNumber" :checked-value="1" @blur="onAppointmentBlur" />
 				</n-form-item>
 			</div>
-		</n-form>
 
-		<n-text :italic="true">Änderungen werden automatisch gespeichert.</n-text>
+			<n-h2>E-Mail</n-h2>
+
+			<div class="flex gap-5">
+				<n-form-item class="flex-1" label="Absender E-Mail">
+					<n-input v-model:value="appointment.mailSender" @blur="onAppointmentBlur" />
+				</n-form-item>
+
+				<n-form-item class="flex-1" label="Absender Name">
+					<n-input v-model:value="appointment.mailSenderName" @blur="onAppointmentBlur" />
+				</n-form-item>
+
+				<n-form-item class="w-1/2" label="Betreff">
+					<n-input v-model:value="appointment.mailSubject" @blur="onAppointmentBlur" />
+				</n-form-item>
+
+			</div>
+
+			
+			<n-form-item label="E-Mail Inhalt">
+				<n-input type="textarea" v-model:value="appointment.mailBody" @blur="onAppointmentBlur" />
+			</n-form-item>
+
+			Mögliche Platzhalter:
+
+
+		</n-form>
 	</div>
 </template>
 

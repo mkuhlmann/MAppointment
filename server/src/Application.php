@@ -12,7 +12,7 @@ class Application {
 		self::$instance = $app;
 	}
 
-	public static function getInstance() {
+	public static function getInstance() : self {
 		return self::$instance;
 	}
 
