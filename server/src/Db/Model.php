@@ -5,6 +5,7 @@ namespace App\Db;
 use ParagonIE\EasyDB\EasyDB;
 use ParagonIE\EasyDB\EasyStatement;
 
+
 class Model implements \ArrayAccess
 {
 
@@ -17,6 +18,8 @@ class Model implements \ArrayAccess
 
 	protected array $original = [];
 	protected array $changes = [];
+
+	protected array $cachedRelations = [];
 
 
 	public function hasAttribute(string $name): bool
@@ -44,6 +47,39 @@ class Model implements \ArrayAccess
 	{
 		return !$this->exists;
 	}
+
+	/** Relationships */
+	public function belongsTo($className, $foreignKey = null, $ownerKey = null)
+	{
+		if(isset($this->cachedRelations[$className])) {
+			return $this->cachedRelations[$className];
+		}
+
+		$ownerKey = $ownerKey ?? $className::$primaryKey;
+
+		$classNameShort = (new \ReflectionClass($className))->getShortName();
+		$foreignKey = $foreignKey ?? strtolower($classNameShort) . 'Id';
+
+		$this->cachedRelations[$className] = $className::first(QueryBuilder::open()->where($ownerKey, $this->getAttribute($foreignKey)));
+		return $this->cachedRelations[$className];
+	}
+
+	public function hasMany($className, $foreignKey = null, $ownerKey = null)
+	{
+		if(isset($this->cachedRelations[$className])) {
+			return $this->cachedRelations[$className];
+		}
+
+		$owerKey = $ownerKey ?? $className::$primaryKey;
+
+		$classNameShort = (new \ReflectionClass(static::class))->getShortName();
+		$foreignKey = $foreignKey ?? $classNameShort . 'Id';
+
+		$this->cachedRelations[$className] = $className::all(QueryBuilder::open()->with($foreignKey, $this->getAttribute($foreignKey)));
+		return $this->cachedRelations[$className];
+	}
+
+	/** CURD */
 
 	public function save()
 	{
@@ -86,11 +122,18 @@ class Model implements \ArrayAccess
 		static::getDb()->delete(static::getTableName(), [static::$table => $this->attributes[static::$table]]);
 	}
 
+	/** Magic methods */
+
 	public function __get($name)
 	{
 		if (array_key_exists($name, $this->attributes)) {
 			return $this->attributes[$name];
 		}
+
+		if(method_exists($this, $name)) {
+			return $this->$name();
+		}
+
 		return null;
 	}
 
@@ -181,14 +224,14 @@ class Model implements \ArrayAccess
 	public static function first(EasyStatement $where)
 	{
 		$statement = static::where($where);
-		$row = static::getDb()->row('SELECT * FROM ' . static::getTableName() . ' WHERE ' . $statement->sql(), $statement->values());
+		$row = static::getDb()->row('SELECT * FROM ' . static::getTableName() . ' WHERE ' . $statement->sql(), ...$statement->values());
 		return self::fromRow($row);
 	}
 
 	public static function all(EasyStatement $where = null)
 	{
 		$statement = static::where($where);
-		$rows = static::getDb()->run('SELECT * FROM ' . static::getTableName() . ' WHERE ' . $statement->sql(), $statement->values());
+		$rows = static::getDb()->run('SELECT * FROM ' . static::getTableName() . ' WHERE ' . $statement->sql(), ...$statement->values());
 
 		return array_map(function ($row) {
 			return self::fromRow($row);

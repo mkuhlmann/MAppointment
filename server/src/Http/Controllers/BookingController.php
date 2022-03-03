@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Helper;
 use App\Http\ResourceNotFoundJsonResponse;
 use App\Models\Appointment;
+use App\Models\Booking;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -112,6 +113,16 @@ class BookingController
 
 
 		return new JsonResponse(['success' => 'Booking successful', 'bookingId' => $bookingId]);
+	}
+
+	public function resendMail(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$booking = Booking::find($params['id']);
+		if (!$booking) {
+			return new ResourceNotFoundJsonResponse();
+		}
+
+		$booking->sendMail(true);
 	}
 
 	private function getMailer() {

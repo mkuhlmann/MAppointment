@@ -26,6 +26,7 @@ $container
 
 $container->addServiceProvider(new \App\ServiceProvider\ApplicationServiceProvider());
 $container->addServiceProvider(new \App\ServiceProvider\RouteServiceProvider());
+$container->addServiceProvider(new \App\ServiceProvider\MailServiceProvider());
 
 $app = $container->get(\App\Application::class);
 $router = $container->get(\League\Route\Router::class);
@@ -37,6 +38,7 @@ $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
 	$_COOKIE,
 	$_FILES
 );
+
 
 /** Let's go. */
 try {

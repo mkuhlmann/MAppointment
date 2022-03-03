@@ -17,7 +17,6 @@ function dbdate($timestamp = null) : string {
 	return gmdate('Y-m-d H:i:s');
 }
 
-
 function nanoid($size = 21) : string {
 	return Helper::nanoid($size);
 }

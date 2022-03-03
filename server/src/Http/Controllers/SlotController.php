@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Controllers;
 
 use App\Helper;
@@ -23,7 +21,7 @@ class SlotController
 	/** Admin Routes */
 	public function getBookings(ServerRequestInterface $request, array $params): ResponseInterface
 	{
-		$appointments = $this->db->run('SELECT * FROM bookings WHERE slotId = ?', $params['id']);
+		$appointments = $this->db->run('SELECT bookings.*, slots.start, slots.end FROM bookings LEFT JOIN slots ON bookings.slotId = slots.id WHERE slots.id = ?', $params['id']);
 		return new JsonResponse($appointments);
 	}
 

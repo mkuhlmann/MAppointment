@@ -4,6 +4,7 @@ import { ref, h } from 'vue';
 
 import { Slot } from '@/types';
 import { useApi } from '@/shared/composables/api';
+import BookingsTable from './BookingsTable.vue';
 
 const message = useMessage();
 
@@ -16,36 +17,6 @@ const emits = defineEmits<{
 const api = useApi();
 
 const bookings = ref([]);
-const bookingsColumns = [
-	{
-		title: 'Vorname',
-		key: 'firstName'
-	},
-	{
-		title: 'Nachname',
-		key: 'lastName'
-	},
-	{
-		title: 'E-Mail',
-		key: 'email'
-	},
-	{
-		title: 'Buchungszeit',
-		key: 'createdAt'
-	},
-	{
-		title: 'Aktionen',
-		key: 'actions',
-		render: (row) => {
-			return h(NButton, {
-				size: 'small', onClick: () => {
-					
-				},
-				type: 'error'
-			}, { default: () => 'Löschen' });
-		}
-	}
-] as DataTableColumns;
 
 const remove = function() {
 	if(bookings.value.length > 0) {
@@ -70,7 +41,7 @@ api.$fetch(`/api/v1/slots/${props.modelValue.id}/bookings`).then((res: any) => {
 	<n-card :title="'Termin ' + props.modelValue.start" size="huge">
 		<n-h2>Buchungen</n-h2>
 
-		<n-data-table :columns="bookingsColumns" :data="bookings" :pagination="false" />
+		<bookings-table :slotId="props.modelValue.id" />
 
 		<template #footer>
 			<n-button type="primary" class="mr-5">Speichern</n-button>
