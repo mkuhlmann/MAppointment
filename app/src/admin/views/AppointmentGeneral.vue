@@ -56,7 +56,7 @@ const onAppointmentBlur = async function () {
 			</div>
 
 			<n-form-item label="Beschreibung (Markdown)">
-				<n-input type="textarea" v-model:value="appointment.description" @blur="onAppointmentBlur" />
+				<n-input type="textarea" v-model:value="appointment.description" @blur="onAppointmentBlur" rows="15" />
 			</n-form-item>
 
 			<div class="flex gap-5">
@@ -94,15 +94,23 @@ const onAppointmentBlur = async function () {
 					<n-input v-model:value="appointment.mailSenderName" @blur="onAppointmentBlur" />
 				</n-form-item>
 
-				<n-form-item class="w-1/2" label="Betreff">
+				<n-form-item class="w-1/4" label="Betreff (benötigt Bestätigung)">
+					<n-input v-model:value="appointment.mailSubjectValidate" @blur="onAppointmentBlur" />
+				</n-form-item>
+
+				<n-form-item class="w-1/4" label="Betreff (bestätigt)">
 					<n-input v-model:value="appointment.mailSubject" @blur="onAppointmentBlur" />
 				</n-form-item>
 
 			</div>
 
 			
-			<n-form-item label="E-Mail Inhalt">
-				<n-input type="textarea" v-model:value="appointment.mailBody" @blur="onAppointmentBlur" />
+			<n-form-item label="E-Mail Inhalt (benötigt Bestätigung)">
+				<n-input type="textarea" v-model:value="appointment.mailBody" @blur="onAppointmentBlur" rows="10" />
+			</n-form-item>
+
+			<n-form-item label="E-Mail Inhalt (bestätigt)">
+				<n-input type="textarea" v-model:value="appointment.mailBodyValidate" @blur="onAppointmentBlur" rows="10" />
 			</n-form-item>
 
 			Mögliche Platzhalter:

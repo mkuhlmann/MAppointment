@@ -59,6 +59,12 @@ class AppointmentController
 				'isActive' => $body['isActive'] ? 1 : 0,
 				'requireMailValidation' => $body['requireMailValidation'] ? 1 : 0,
 				'requirePhoneNumber' => $body['requirePhoneNumber'] ? 1 : 0,
+				'mailSender' => $body['mailSender'],
+				'mailSenderName' => $body['mailSenderName'],
+				'mailSubject' => $body['mailSubject'],
+				'mailBody' => $body['mailBody'],
+				'mailSubjectValidate' => $body['mailSubjectValidate'],
+				'mailBodyValidate' => $body['mailBodyValidate'],
 				'updatedAt' => \dbdate()
 			],
 			['id' => $params['id']]

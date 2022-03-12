@@ -13,7 +13,16 @@ use App\Db\Model;
  * @property string $name
  * @property bool $requireMailValidation
  * 
+ * @property string $mailSender;
+ * 
  */
 class Appointment extends Model
 {
+	/**
+	 * Generates full URL for this appointment.
+	 * @return string Full url to the appointment
+	 */
+	public function url(): string {
+		return $_ENV['BASE_URL'] . '/' . $this->id;
+	}
 }

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /** @var \League\Route\Router $router */
 /** @var \League\Container\Container $container */
 
@@ -40,7 +38,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->post('/appointments', [AppointmentController::class, 'createAppointment'])->middleware($auth);
 	$route->put('/appointments/{id}', [AppointmentController::class, 'updateAppointment'])->middleware($auth);
 	$route->get('/appointments/{id}/bookings', [AppointmentController::class, 'getBookings'])->middleware($auth);
-	
+
 	$route->post('/appointments/{id}/slots', [AppointmentController::class, 'createSlot'])->middleware($auth);
 
 	$route->get('/appointments/{id}', [AppointmentController::class, 'getAppointment']);
@@ -48,7 +46,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->get('/appointments/{id}/available-slots/{date}', [AppointmentController::class, 'getAvailableSlots']);
 
 	$route->get('/appointments/{id}/slots', [AppointmentController::class, 'getSlots']);
-	
+
 	// /slots routes
 	$route->get('/slots/{id}', [SlotController::class, 'getSlot']);
 	$route->get('/slots/{id}/bookings', [SlotController::class, 'getBookings'])->middleware($auth);
@@ -61,10 +59,10 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->get('/bookings/latest', [BookingController::class, 'getLatestBookings'])->middleware($auth);
 	$route->get('/bookings/stats', [BookingController::class, 'getBookingStats'])->middleware($auth);
 	$route->get('/bookings/{id}', [BookingController::class, 'getBooking']);
-	$route->get('/bookings/{id}/resend-mail', [BookingController::class, 'resendMail'])->middleware($auth);
-
+	$route->get('/bookings/{id}/send-mail', [BookingController::class, 'sendMail'])->middleware($auth);
+	$route->post('/bookings/{id}/confirm', [BookingController::class, 'confirmBooking'])->middleware($auth);
 })->middleware(new CorsMiddleware());
 
-$router->map('GET', '/admin/{any:.*}', function (ServerRequestInterface $request): ResponseInterface {
-	return new HtmlResponse(file_get_contents(__DIR__ . '/public/admin/index.html'));
+$router->map('GET', '/admin/{any:.*}', function (ServerRequestInterface $request) use ($container) {
+	return new HtmlResponse(file_get_contents($container->get('basePath') . '/public/admin/index.html'));
 });

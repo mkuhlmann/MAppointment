@@ -15,7 +15,9 @@ export type Appointment = {
 	mailSender?: string;
 	mailSenderName?: string;
 	mailSubject?: string;
+	mailSubjectValidate?: string;
 	mailBody?: string;
+	mailBodyValidate?: string;
 
 	updatedAt: Date;
 	createdAt: Date;

@@ -39,7 +39,9 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`mailSender` varchar(255),
 				`mailSenderName` varchar(255),
 				`mailSubject` varchar(255),
+				`mailSubjectValidate` varchar(255),
 				`mailBody` text,
+				`mailBodyValidate` text,
 
 				`requireMailValidation` tinyint(1) NOT NULL DEFAULT 0,
 				`requirePhoneNumber` tinyint(1) NOT NULL DEFAULT 0,
@@ -67,9 +69,12 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`firstName` varchar(255),
 				`lastName` varchar(255),
 				`email` varchar(255),
+				`phone` varchar(255),
 				`comment` text,
 				`mailSentAt` datetime,
 				`mailConfirmedAt` datetime,
+				`timezone` varchar(255) NOT NULL,
+				`language` varchar(255) NOT NULL,
 				`createdAt` datetime,
 				`updatedAt` datetime				
 			);

@@ -77,7 +77,7 @@ class AuthController {
 	}
 
 	public function getUser(ServerRequestInterface $request): ResponseInterface
-	{		
+	{
 		return new JsonResponse($this->app->get('user'));
 	}
 }

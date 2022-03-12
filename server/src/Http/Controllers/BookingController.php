@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Controllers;
 
 use App\Helper;
@@ -12,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 use ParagonIE\EasyDB\EasyDB;
-use PHPMailer\PHPMailer\PHPMailer;
 use Rakit\Validation\Validator;
 
 class BookingController
@@ -30,11 +27,12 @@ class BookingController
 		if (!$booking) {
 			return new ResourceNotFoundJsonResponse();
 		}
-		
+
 		return new JsonResponse($booking);
 	}
 
-	public function getLatestBookings(ServerRequestInterface $request): ResponseInterface	{
+	public function getLatestBookings(ServerRequestInterface $request): ResponseInterface
+	{
 		$bookings = $this->db->run('SELECT bookings.*, appointments.name, slots.appointmentId FROM bookings LEFT JOIN slots ON slots.id = bookings.slotId LEFT JOIN appointments ON appointments.id = slots.appointmentId ORDER BY bookings.createdAt DESC LIMIT 20');
 		return new JsonResponse($bookings);
 	}
@@ -85,18 +83,17 @@ class BookingController
 			return new JsonResponse(['error' => 'Buchung existiert bereits.'], 400);
 		}
 
-		$bookingId = Helper::nanoid();
 		$bookingSecret = Helper::nanoid();
-		$this->db->insert('bookings', [
-			'id' => $bookingId,
+
+		$booking = Booking::create([
 			'secret' => $bookingSecret,
 			'slotId' => $slotId,
 			'firstName' => $body['firstName'],
 			'lastName' => $body['lastName'],
 			'email' => $body['email'],
 			'comment' => $body['comment'] ?? null,
-			'createdAt' => date('Y-m-d H:i:s'),
-			'updatedAt' => date('Y-m-d H:i:s'),
+			'createdAt' => \dbdate(),
+			'updatedAt' => \dbdate()
 		]);
 
 		$this->db->update('slots', [
@@ -105,36 +102,45 @@ class BookingController
 			'id' => $slotId
 		]);
 
-		// send mail confirmation
-		$mailer = $this->getMailer();
-		$mailer->addAddress($body['email'], $body['firstName'] . ' ' . $body['lastName']);
-		
-		
+		$booking->sendMail();
 
-
-		return new JsonResponse(['success' => 'Booking successful', 'bookingId' => $bookingId]);
+		return new JsonResponse(['success' => 'Booking successful', 'bookingId' => $booking->id]);
 	}
 
-	public function resendMail(ServerRequestInterface $request, array $params): ResponseInterface
+	public function confirmBooking(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$body = $request->getParsedBody();
+
+		$booking = Booking::findOrFail($params['id']);
+		if (!$booking) {
+			return new ResourceNotFoundJsonResponse();
+		}
+
+		if ($booking['secret'] !== $body['secret']) {
+			return new JsonResponse(['error' => 'Invalid secret'], 400);
+		}
+
+
+		$booking->mailConfirmedAt = \dbdate();
+		$booking->sendMail();
+		$booking->save();
+
+		return new JsonResponse(['success' => 'Booking confirmed']);
+	}
+
+	public function sendMail(ServerRequestInterface $request, array $params): ResponseInterface
 	{
 		$booking = Booking::find($params['id']);
 		if (!$booking) {
 			return new ResourceNotFoundJsonResponse();
 		}
 
-		$booking->sendMail(true);
-	}
-
-	private function getMailer() {
-		$mailer = new PHPMailer();
-		$mailer->isSMTP();
-		$mailer->Host = $_ENV['SMTP_HOST'];
-		$mailer->SMTPAuth = true;
-		$mailer->Username = $_ENV['SMTP_USER'];
-		$mailer->Password = $_ENV['SMTP_PASSWORD'];
-		$mailer->SMTPSecure = $_ENV['SMTP_ENCRYPTION'];
-		$mailer->Port = $_ENV['SMTP_PORT'];
-
-		return $mailer;
+		try {
+			$booking->sendMail();
+			return new JsonResponse(['success' => 'Mail sent']);
+		} catch (\Exception $e) {
+			return new JsonResponse(['error' => $e->getMessage()], 500);
+		}
+		
 	}
 }

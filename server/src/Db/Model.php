@@ -2,13 +2,20 @@
 
 namespace App\Db;
 
+use Exception;
+use InvalidArgumentException;
+use League\Container\Exception\ContainerException;
+use League\Container\Exception\NotFoundException;
 use ParagonIE\EasyDB\EasyDB;
 use ParagonIE\EasyDB\EasyStatement;
+use ParagonIE\EasyDB\Exception\QueryError;
+use TypeError;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Rakit\Validation\Rules\Nullable;
 
-
-class Model implements \ArrayAccess
+class Model implements \ArrayAccess, \JsonSerializable 
 {
-
 	protected static string $table;
 	protected static string $primaryKey = 'id';
 
@@ -21,6 +28,28 @@ class Model implements \ArrayAccess
 
 	protected array $cachedRelations = [];
 
+	 /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+	protected array $fillable = [];
+
+	/**
+     * The attributes that aren't mass assignable.
+     *
+     * @var string[]
+     */
+	protected array $guarded = ['*'];
+
+	public function __construct(array $attributes = [])
+	{
+		$this->fill($attributes);
+	}
+
+	public function jsonSerialize(): mixed { 
+		return $this->attributes;
+	}
 
 	public function hasAttribute(string $name): bool
 	{
@@ -36,6 +65,27 @@ class Model implements \ArrayAccess
 	public function getAttribute($key)
 	{
 		return $this->attributes[$key];
+	}
+
+	public function isFillable($key) {
+		if(in_array($key, $this->fillable)) {
+			return true;
+		}
+
+		if($this->guarded == ['*']) {
+			return false;
+		}
+
+		return !in_array($key, $this->guarded);
+	}
+
+	public function fill(array $attributes)
+	{
+		foreach ($attributes as $key => $value) {
+			if($this->isFillable($key)) {
+				$this->setAttribute($key, $value);
+			}
+		}
 	}
 
 	public function isDirty()
@@ -111,7 +161,7 @@ class Model implements \ArrayAccess
 			throw new \Exception('Cannot update a model that does not exist');
 		}
 
-		static::getDb()->update(static::getTableName(), $this->changes, [static::$table => $this->attributes[static::$table]]);
+		static::getDb()->update(static::getTableName(), $this->changes, [static::$primaryKey => $this->attributes[static::$primaryKey]]);
 
 		$this->original = $this->attributes;
 		$this->changes = [];
@@ -119,7 +169,7 @@ class Model implements \ArrayAccess
 
 	public function delete()
 	{
-		static::getDb()->delete(static::getTableName(), [static::$table => $this->attributes[static::$table]]);
+		static::getDb()->delete(static::getTableName(), [static::$primaryKey => $this->attributes[static::$primaryKey]]);
 	}
 
 	/** Magic methods */
@@ -187,9 +237,9 @@ class Model implements \ArrayAccess
 		return static::$table ??  strtolower(preg_replace('/([^A-Z])([A-Z])/', "$1_$2", $className)) . 's';
 	}
 
-	private static function fromRow(array $row)
+	private static function fromRow(array|null $row)
 	{
-		if (empty($row)) {
+		if (empty($row) || $row == null) {
 			return null;
 		}
 
@@ -238,10 +288,37 @@ class Model implements \ArrayAccess
 		}, $rows);
 	}
 
+	/**
+	 * 
+	 * @param mixed $id 
+	 * @return null|static Model
+	 */
 	public static function find($id)
 	{
 		$db = self::getDb();
-
 		return static::fromRow($db->row('SELECT * FROM ' . static::getTableName() . ' WHERE ' . static::$primaryKey . ' = ?', $id));
+	}
+
+	public static function findOrFail($id) {
+		$model = static::find($id);
+		if(!$model) {
+			throw new \Exception('Model not found');
+		}
+		return $model;
+	}
+
+
+	/**
+	 * Creates new model and saves to database
+	 * 
+	 * @param array $attributes 
+	 * @return static Model
+	 */
+	public static function create(array $attributes)
+	{
+		$model = new static();
+		$model->fill($attributes);
+		$model->save();
+		return $model;
 	}
 }

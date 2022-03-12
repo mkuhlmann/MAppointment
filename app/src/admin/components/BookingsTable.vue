@@ -54,11 +54,11 @@ const bookingsColumns = [
 	},
 	{
 		title: 'E-Mail versandt',
-		key: 'emailSent'
+		key: 'mailSentAt'
 	},
 	{
 		title: 'E-Mail bestätigt',
-		key: 'emailConfirmed'
+		key: 'mailConfirmedAt'
 	},
 	{
 		title: 'Aktionen',
@@ -66,9 +66,14 @@ const bookingsColumns = [
 		render: (row) => {
 			return h(NButton, {
 				size: 'small', onClick: () => {
-					api.$fetch(`/api/v1/bookings/${row.id}/resend-mail`).then(() => fetchBookings());
+					api.$fetch(`/api/v1/bookings/${row.id}/send-mail`)
+						.then((response) => {
+							if(response.error) message.error(response.error);
+							else message.success('E-Mail wurde versandt');
+							fetchBookings();
+						});
 				}
-			}, { default: () => 'E-Mail erneut senden' });
+			}, { default: () => 'E-Mail senden' });
 		}
 	}
 ] as DataTableColumns;

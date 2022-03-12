@@ -15,15 +15,16 @@ class MailServiceProvider extends AbstractServiceProvider {
 		$container = $this->getContainer();
 
 		$container
-			->add(PHPMailer::class, function() {
+			->add(PHPMailer::class, function() {	
 				$mail = new PHPMailer();
+				$mail->CharSet = 'UTF-8';
 				$mail->isSMTP();
-				$mail->Host = getenv('SMTP_HOST');
+				$mail->Host = $_ENV['SMTP_HOST'];
 				$mail->SMTPAuth = true;
-				$mail->Username = getenv('SMTP_USER');
-				$mail->Password = getenv('SMTP_PASSWORD');
-				$mail->SMTPSecure = 'tls';
-				$mail->Port = 587;
+				$mail->Username = $_ENV['SMTP_USER'];
+				$mail->Password = $_ENV['SMTP_PASSWORD'];
+				$mail->SMTPSecure = $_ENV['SMTP_SECURE'];
+				$mail->Port = $_ENV['SMTP_PORT'];
 				return $mail;
 			});
 	 }

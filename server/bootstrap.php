@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Laminas\Diactoros\Response\JsonResponse;
+
 date_default_timezone_set('UTC');
 
 include 'vendor/autoload.php';
@@ -45,6 +47,8 @@ try {
 	$response = $router->dispatch($request);
 } catch (\League\Route\Http\Exception\NotFoundException $e) {
 	$response = new \Laminas\Diactoros\Response\HtmlResponse(file_get_contents(__DIR__ . '/public/index.html'));
+} catch (\Exception $e) {
+	$reponse = new JsonResponse(['error' => $e->getMessage()]);
 }
 
 (new Laminas\HttpHandlerRunner\Emitter\SapiEmitter())->emit($response);

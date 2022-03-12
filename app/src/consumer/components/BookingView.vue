@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, inject, computed, onMounted } from 'vue'
 import { NCard,  NDivider, NButton, NSpace, NSpin, NText, NP, NResult, NA, NTable } from 'naive-ui';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, routerKey } from 'vue-router';
 import dayjs from 'dayjs';
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
+
+import RenderMarkdown from '@/shared/components/RenderMarkdown.vue';
 
 import { useApi } from '@/shared/composables/api';
 import { Appointment } from '@/types';
@@ -12,10 +14,9 @@ import { Appointment } from '@/types';
 const api = useApi();
 
 const route = useRoute();
-
+const router = useRouter();
 const $isDarkMode = inject<boolean>('$isDarkMode');
 
-const showSuccessAlert = route.query.e == 's';
 const isLoading = ref(true);
 
 const booking = ref();
@@ -24,6 +25,15 @@ const slot = ref();
 
 onMounted(async () => {
 	try {
+		if(route.query.c) {
+			let confirmation = await api.$fetch(`/api/v1/bookings/${route.params.id}/confirm`, {
+				method: 'POST',
+				body: {
+					secret: route.query.c
+				}
+			});
+			router.push('/booking/' + route.params.id);
+		}
 		let _booking = await api.$fetch(`/api/v1/bookings/${route.params.id}`);
 		booking.value = _booking;
 		let _slot = await api.$fetch(`/api/v1/slots/${_booking.slotId}`);
@@ -41,20 +51,29 @@ onMounted(async () => {
 
 <template>
 	<n-spin :show="isLoading">
-		<n-card v-if="!isLoading" class="booking-container" :title="appointment.name" size="large">
-			<n-p>{{ appointment.description }}</n-p>
-
+		<n-card v-if="!isLoading" class="booking-container" :title="appointment.name" size="huge">
 			<n-result
-				v-if="showSuccessAlert"
-				status="success"
-				title="Buchung bestätigt"
-				description="Sie erhalten eine Bestätigung per E-Mail."
-			></n-result>
-
-			<n-result
+				v-if="appointment.requireMailValidation && !booking.mailConfirmedAt"
+				class="my-5"
 				status="warning"
 				title="Bestätigung erforderlich"
 				description="Bitte bestätigen Sie die Buchung über den Link den Sie per E-Mail erhalten haben." />
+
+			<n-result
+				v-if="!appointment.requireMailValidation || booking.mailConfirmedAt"
+				status="success"
+				title="Buchung bestätigt"
+				description="Sie haben eine Bestätigung per E-Mail erhalten."
+			></n-result>
+
+
+			<n-divider />
+
+
+			<render-markdown v-if="appointment.description" :markdown="appointment.description" />
+			<div v-if="!appointment.description" class="mt-5"></div>
+
+			
 
 			<n-table>
 				<tbody>
@@ -80,6 +99,7 @@ onMounted(async () => {
 					</tr>
 				</tbody>
 			</n-table>
+
 			<div v-if="appointment.latitude" class="w-full mt-5 rounded-md" style="height: 200px;">
 				<l-map :center="[appointment.latitude, appointment.longitude]" :zoom="13">
 					<l-tile-layer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></l-tile-layer>

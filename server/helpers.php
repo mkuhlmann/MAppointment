@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 use App\Helper;
 
@@ -19,4 +19,11 @@ function dbdate($timestamp = null) : string {
 
 function nanoid($size = 21) : string {
 	return Helper::nanoid($size);
+}
+
+function tzdate($format, $timestamp = null, $timezone = 'UTC') {
+	date_default_timezone_set($timezone);
+	$time = date($format, $timestamp ?: time());
+	date_default_timezone_set('UTC');
+	return $time;
 }
