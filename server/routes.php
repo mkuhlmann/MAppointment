@@ -63,7 +63,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->put('/bookings/{id}', [BookingController::class, 'updateBooking'])->middleware($auth);
 	$route->get('/bookings/{id}/send-mail', [BookingController::class, 'sendMail'])->middleware($auth);
 	$route->post('/bookings/{id}/confirm', [BookingController::class, 'confirmBooking'])->middleware($auth);
-	$route->post('/bookings/{id}/cancel', [BookingController::class, 'cancelBooking'])->middleware($auth);
+	$route->post('/bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
 })->middleware(new CorsMiddleware());
 
 $router->map('GET', '/admin/{any:.*}', function (ServerRequestInterface $request) use ($container) {

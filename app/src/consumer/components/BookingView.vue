@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, inject, computed, onMounted } from 'vue'
-import { NCard,  NDivider, NButton, NSpace, NSpin, NText, NP, NResult, NA, NTable } from 'naive-ui';
+import { NCard,  NDivider, NButton, NSpace, NSpin, NText, NP, NResult, NA, NTable, useMessage } from 'naive-ui';
 import { useRouter, useRoute, routerKey } from 'vue-router';
 import dayjs from 'dayjs';
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet';
@@ -13,6 +13,7 @@ import { Appointment } from '@/types';
 
 const api = useApi();
 
+const message = useMessage();
 const route = useRoute();
 const router = useRouter();
 const $isDarkMode = inject<boolean>('$isDarkMode');
@@ -22,6 +23,22 @@ const isLoading = ref(true);
 const booking = ref();
 const appointment = ref<Partial<Appointment>>({});
 const slot = ref();
+const cancelBookingLoading = ref(false);
+const canCancelBooking = ref(false);
+
+const cancelBooking = async () => {
+	cancelBookingLoading.value = true;
+	let response = await api.$fetch(`/api/v1/bookings/${booking.value.id}/cancel`, { method: 'POST' });
+	if(response.error) {
+		message.error(response.error);
+		return;
+	} else {
+		message.success('Buchung wurde erfolgreich storniert.');
+		canCancelBooking.value = false;
+	}
+
+	cancelBookingLoading.value = false;
+}
 
 onMounted(async () => {
 	try {
@@ -43,6 +60,7 @@ onMounted(async () => {
 		slot.value = _slot;
 		let _appointment = await api.$fetch(`/api/v1/appointments/${_slot.appointmentId}`);
 		appointment.value = _appointment;
+		canCancelBooking.value = _appointment.cancellationEnabled && ( dayjs().unix() - dayjs.utc(_slot.start).unix()) > _appointment.cancellationDeadline * 60;
 	} catch (e) {
 		console.log(e);
 	}
@@ -61,7 +79,7 @@ onMounted(async () => {
 				class="my-5"
 				status="warning"
 				title="Bestätigung erforderlich"
-				:description="'Bitte bestätigen Sie die Buchung über den Link den Sie per E-Mail erhalten.' + booking.mailSentAt ? '' : ' Der Versand verzögert sich aktuell.'" />
+				:description="'Bitte bestätigen Sie die Buchung über den Link den Sie per E-Mail erhalten.' + (booking.mailSentAt ? '' : ' Der Versand verzögert sich aktuell.')" />
 
 			<n-result
 				v-if="!appointment.requireMailValidation || booking.confirmedAt"
@@ -100,8 +118,8 @@ onMounted(async () => {
 				</tbody>
 			</n-table>
 
-			<div v-if="appointment.cancellationEnabled" class="mt-5">
-				<n-button type="error" class="w-full">Buchung stornieren</n-button>
+			<div v-if="canCancelBooking" class="mt-5">
+				<n-button type="error" class="w-full" @click="cancelBooking" :loading="cancelBookingLoading">Buchung stornieren</n-button>
 			</div>
 
 			<div v-if="appointment.latitude" class="w-full mt-5 rounded-md" style="height: 200px;">

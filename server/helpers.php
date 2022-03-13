@@ -1,6 +1,5 @@
 <?php
 
-use App\Helper;
 
 function app() : \App\Application {
 	return \App\Application::getInstance();
@@ -18,7 +17,12 @@ function dbdate($timestamp = null) : string {
 }
 
 function nanoid($size = 21) : string {
-	return Helper::nanoid($size);
+	$alphabet = '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+	$nanoid = '';
+	for ($i = 0; $i < $size; $i++) {
+		$nanoid .= substr($alphabet, mt_rand(0, strlen($alphabet)), 1);
+	}
+	return $nanoid;
 }
 
 function tzdate(string $format, string|int $timestamp = null, string $timezone = 'UTC'): string {

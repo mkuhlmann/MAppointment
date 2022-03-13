@@ -44,6 +44,11 @@ class Booking extends Model
 		return $this->belongsTo(Slot::class);
 	}
 
+	public function isCancellable(): bool
+	{
+		return $this->appointment->cancellationEnabled && (time() - strtotime($this->slot->start)) > $this->appointment->cancellationDeadline * 60 || app()->get('user') != null;
+	}
+
 	public function sendMail()
 	{
 		/** @var PHPMailer */
@@ -87,24 +92,32 @@ class Booking extends Model
 		}
 	}
 
-	public function cancel($sendMail = true) {
-		if($sendMail) {
-			$this->sendCancellationMail();
+	public function cancel($sendMail = true): bool
+	{
+		try {
+			$this->delete();
+
+			if ($sendMail) {
+				$this->sendCancellationMail();
+			}
+			return true;
+		} catch (\Exception $e) {
+			return false;
 		}
-
-		$this->delete();
-
 	}
 
-	public function confirmUrl() {
+	public function confirmUrl()
+	{
 		return $this->url() . '?c=' . $this->secret;
 	}
 
-	public function url() {
+	public function url()
+	{
 		return $_ENV['BASE_URL'] . '/booking/' . $this->id;
 	}
 
-	public function mailDetails($isHtml = false) {
+	public function mailDetails($isHtml = false)
+	{
 		$text = $isHtml ? '<h2>Buchungsübersicht</h2>' : 'Buchungsübersicht';
 		$text .= $isHtml ? '<table>' : "\n";
 
@@ -119,7 +132,7 @@ class Booking extends Model
 		];
 
 		foreach ($rows as $label => $value) {
-			if($isHtml) {
+			if ($isHtml) {
 				$text .= '<tr><td>' . $label . '</td><td>' . $value . '</td></tr>';
 			} else {
 				$text .= str_pad($label . ':', 20) . $value . "\n";
@@ -128,10 +141,10 @@ class Booking extends Model
 
 		$text .= $isHtml ? '</table>' : '';
 		return $text;
-		
 	}
 
-	public function replacePlaceholders($text, $isHtml = false): string {
+	public function replacePlaceholders($text, $isHtml = false): string
+	{
 		$placeholders = [
 			'{firstName}' => $this->firstName,
 			'{lastName}' => $this->lastName,
@@ -151,11 +164,11 @@ class Booking extends Model
 		return str_replace(array_keys($placeholders), array_values($placeholders), $text);
 	}
 
-	public function delete() {
+	public function delete()
+	{
 		$this->slot->free++;
 		$this->slot->save();
 
 		parent::delete();
 	}
-
 }

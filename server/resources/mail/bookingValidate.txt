@@ -3,7 +3,7 @@ Sehr geehrte/r {firstName} {lastName},
 sie haben sich für die für {appointmentName} angemeldet.
 
 Bitte bestätigen Sie Ihre Buchung mit dem folgenden Link:
-{appointmentUrl}
+{confirmUrl}
 
 Buchungsübersicht:
 

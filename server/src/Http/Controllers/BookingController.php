@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper;
 use App\Http\ResourceNotFoundJsonResponse;
 use App\Models\Appointment;
 use App\Models\Booking;
@@ -165,13 +164,11 @@ class BookingController
 
 		$body = $request->getParsedBody();
 
-		if($booking->cancellationEnabled || app()->get('user') !== null) {
-			if ($booking->cancel($body['sendCancellationMail'] ?? true)) {
-				return new JsonResponse(['success' => 'Buchung storniert.']);
-			} 
+		if ($booking->isCancellable() && $booking->cancel($body['sendCancellationMail'] ?? true)) {
+			return new JsonResponse(['success' => 'Buchung storniert.']);
 		}
 
-		return new JsonResponse(['error' => 'Buchung konnte nicht storniert werden.'], 500);
+		return new JsonResponse(['error' => 'Buchung kann nicht mehr storniert werden.'], 500);
 	}
 
 	public function sendMail(ServerRequestInterface $request, array $params): ResponseInterface

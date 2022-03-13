@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { defineComponent, ref, inject, computed } from 'vue';
-import { darkTheme, NConfigProvider, NCard, NLayout, NSpace, NSteps, NStep } from 'naive-ui';
+import { darkTheme, NConfigProvider, NCard, NLayout, NSpace, NSteps, NMessageProvider } from 'naive-ui';
 import { useDark } from '@vueuse/core';
 
 const isDark = useDark();
@@ -15,12 +15,14 @@ const step = ref(1);
 </script>
 
 <template>
-	<n-config-provider :theme="useDarkMode">
-		<n-layout class="n-layout" position="absolute">
-			<div class="page-container" v-bind:class="{ 'bg-gray-100': !isDark }">
-				<router-view></router-view>
-			</div>
-		</n-layout>		
+	<n-config-provider :theme="useDarkMode">	
+		<n-message-provider :duration="4000" :keep-alive-on-hover="true">
+			<n-layout class="n-layout" position="absolute">
+				<div class="page-container" v-bind:class="{ 'bg-gray-100': !isDark }">
+					<router-view></router-view>
+				</div>
+			</n-layout>		
+		</n-message-provider>
 	</n-config-provider>
 </template>
 

@@ -135,7 +135,7 @@ class Model implements \ArrayAccess, \JsonSerializable
 		$classNameShort = (new \ReflectionClass(static::class))->getShortName();
 		$foreignKey = $foreignKey ?? $classNameShort . 'Id';
 
-		$this->cachedRelations[$className] = $className::all(QueryBuilder::open()->with($foreignKey, $this->getAttribute($foreignKey)));
+		$this->cachedRelations[$className] = $className::all(QueryBuilder::open()->where($foreignKey, $this->getAttribute($foreignKey)));
 		return $this->cachedRelations[$className];
 	}
 
@@ -326,7 +326,6 @@ class Model implements \ArrayAccess, \JsonSerializable
 		}
 		return $model;
 	}
-
 
 	/**
 	 * Creates new model and saves to database
