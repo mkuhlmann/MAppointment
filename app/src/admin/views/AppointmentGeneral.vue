@@ -67,7 +67,7 @@ const onAppointmentBlur = async function () {
 					<n-input v-model:value="appointment.location" @blur="onAppointmentBlur" />
 				</n-form-item>
 
-				<n-form-item label="Breitengrad (für Karte)">
+  				<n-form-item label="Breitengrad (für Karte)">
 					<n-input-number v-model:value="appointment.latitude" @blur="onAppointmentBlur" />
 				</n-form-item>
 
@@ -82,7 +82,7 @@ const onAppointmentBlur = async function () {
 					<n-switch
 						v-model:value="appointment.requireMailValidation"
 						:checked-value="1"
-						@blur="onAppointmentBlur"
+						@update-value="onAppointmentBlur"
 					/>
 				</n-form-item>
 
@@ -90,8 +90,20 @@ const onAppointmentBlur = async function () {
 					<n-switch
 						v-model:value="appointment.requirePhoneNumber"
 						:checked-value="1"
-						@blur="onAppointmentBlur"
+						@update-value="onAppointmentBlur"
 					/>
+				</n-form-item>
+
+				<n-form-item label="Stornierung möglich?">
+					<n-switch
+						v-model:value="appointment.cancellationEnabled"
+						:checked-value="1"
+						@update-value="onAppointmentBlur"
+					/>
+				</n-form-item>
+
+				<n-form-item label="Spätester Storno-Zeitpunkt (in Minuten)">
+					<n-input-number v-model:value="appointment.cancellationDeadline" @blur="onAppointmentBlur" />
 				</n-form-item>
 			</div>
 

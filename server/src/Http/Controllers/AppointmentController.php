@@ -61,6 +61,8 @@ class AppointmentController
 			'isActive' => $body['isActive'] ? 1 : 0,
 			'requireMailValidation' => $body['requireMailValidation'] ? 1 : 0,
 			'requirePhoneNumber' => $body['requirePhoneNumber'] ? 1 : 0,
+			'cancellationEnabled' => $body['cancellationEnabled'] ? 1 : 0,
+			'cancellationDeadline' => $body['cancellationDeadline'],
 			'mailSender' => $body['mailSender'],
 			'mailSenderName' => $body['mailSenderName'],
 			'mailSubjectConfirmation' => $body['mailSubjectConfirmation'],

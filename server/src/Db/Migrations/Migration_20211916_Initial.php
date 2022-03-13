@@ -34,7 +34,8 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`latitude` decimal(10,8),
 				`longitude` decimal(11,8),
 
-				`cancellationDeadline` int,
+				`cancellationEnabled` tinyint(1) NOT NULL DEFAULT 0,
+				`cancellationDeadline` int NOT NULL DEFAULT 0,
 
 				`mailSender` varchar(255),
 				`mailSenderName` varchar(255),
@@ -68,15 +69,20 @@ class Migration_20211916_Initial implements MigrationInterface {
 				`id` varchar(21) UNIQUE NOT NULL PRIMARY KEY,
 				`slotId` varchar(21) REFERENCES slots (`id`),
 				`secret` varchar(21) NOT NULL,
+				
 				`firstName` varchar(255),
 				`lastName` varchar(255),
 				`email` varchar(255),
 				`phone` varchar(255),
 				`comment` text,
-				`mailSentAt` datetime,
-				`mailConfirmedAt` datetime,
+				
 				`timezone` varchar(255) NOT NULL,
 				`language` varchar(255) NOT NULL,
+				
+				`mailSentAt` datetime,
+				`confirmedAt` datetime,
+				`cancelledAt` datetime,
+				
 				`createdAt` datetime,
 				`updatedAt` datetime				
 			);

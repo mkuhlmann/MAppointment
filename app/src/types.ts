@@ -8,6 +8,9 @@ export type Appointment = {
 	requireMailValidation: boolean;
 	requirePhoneNumber: boolean;
 
+	cancellationEnabled: boolean;
+	cancellationDeadline: number;
+
 	location: string;
 	longitude?: number;
 	latitude?: number;
@@ -45,6 +48,7 @@ export type Booking = {
 	lastName: string;
 	email: string;
 	phone: string;
+	comment: string;
 
 	updatedAt: Date;
 	createdAt: Date;

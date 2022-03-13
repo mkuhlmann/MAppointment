@@ -86,13 +86,14 @@ class Model implements \ArrayAccess, \JsonSerializable
 		return !in_array($key, $this->guarded);
 	}
 
-	public function fill(array $attributes)
+	public function fill(array $attributes, bool $onlyExisting = false)
 	{
 		foreach ($attributes as $key => $value) {
 			if($this->isFillable($key)) {
+				if($onlyExisting && !$this->hasAttribute($key)) {
+					continue;
+				}
 				$this->setAttribute($key, $value);
-			} else {
-				throw new InvalidArgumentException("Attribute $key is not fillable");
 			}
 		}
 	}

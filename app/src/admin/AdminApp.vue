@@ -62,7 +62,7 @@ const menuOptions = [
 
 <template>
 	<n-config-provider :theme="useDarkMode">
-		<n-message-provider>
+		<n-message-provider :duration="4000" :keep-alive-on-hover="true">
 			<n-layout position="absolute">
 				<n-layout-header
 					style="height: 64px; display: flex; align-items: center; padding: 0 32px;"

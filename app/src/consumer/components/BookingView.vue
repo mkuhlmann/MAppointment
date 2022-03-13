@@ -35,6 +35,9 @@ onMounted(async () => {
 			router.push('/booking/' + route.params.id);
 		}
 		let _booking = await api.$fetch(`/api/v1/bookings/${route.params.id}`);
+		if(_booking.error) {
+			router.push('/');
+		}
 		booking.value = _booking;
 		let _slot = await api.$fetch(`/api/v1/slots/${_booking.slotId}`);
 		slot.value = _slot;
@@ -42,7 +45,6 @@ onMounted(async () => {
 		appointment.value = _appointment;
 	} catch (e) {
 		console.log(e);
-		console.log('error');
 	}
 
 	isLoading.value = false;
@@ -55,18 +57,18 @@ onMounted(async () => {
 			<div class="mt-5"></div>
 			
 			<n-result
-				v-if="appointment.requireMailValidation && !booking.mailConfirmedAt"
+				v-if="appointment.requireMailValidation && !booking.confirmedAt"
 				class="my-5"
 				status="warning"
 				title="Bestätigung erforderlich"
-				description="Bitte bestätigen Sie die Buchung über den Link den Sie per E-Mail erhalten haben." />
+				:description="'Bitte bestätigen Sie die Buchung über den Link den Sie per E-Mail erhalten.' + booking.mailSentAt ? '' : ' Der Versand verzögert sich aktuell.'" />
 
 			<n-result
-				v-if="!appointment.requireMailValidation || booking.mailConfirmedAt"
+				v-if="!appointment.requireMailValidation || booking.confirmedAt"
 				status="success"
 				title="Buchung bestätigt"
-				description="Sie haben eine Bestätigung per E-Mail erhalten."
-			></n-result>
+				:description="booking.mailSentAt ? 'Sie haben eine Bestätigung per E-Mail erhalten.' : 'Sie erhalten eine Bestätigung per E-Mail. Der Versand verzögert sich aktuell.'" />
+			
 
 
 			<n-divider />
@@ -97,6 +99,10 @@ onMounted(async () => {
 					</tr>
 				</tbody>
 			</n-table>
+
+			<div v-if="appointment.cancellationEnabled" class="mt-5">
+				<n-button type="error" class="w-full">Buchung stornieren</n-button>
+			</div>
 
 			<div v-if="appointment.latitude" class="w-full mt-5 rounded-md" style="height: 200px;">
 				<l-map :center="[appointment.latitude, appointment.longitude]" :zoom="13">

@@ -44,7 +44,8 @@ const $fetch = async function (url: RequestInfo, options: ApiRequestInit = {}) {
 	const response = await fetch(url, options);
 	const json = await response.json();
 	if (json.error && options.throwError) {
-		throw json.error;
+		//throw json.error;
+		return { error: json.error };
 	}
 	return json;
 };

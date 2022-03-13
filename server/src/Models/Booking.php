@@ -24,6 +24,9 @@ use PHPMailer\PHPMailer\PHPMailer;
  * @property string $timezone
  * @property string $language
  * 
+ * @property bool $cancellationEnabled
+ * @property int $cancellationDeadline
+ * 
  * @property string $createdAt
  * @property string $updatedAt
  */
@@ -49,7 +52,7 @@ class Booking extends Model
 		$mailer->setFrom($this->appointment->mailSender, $this->appointment->mailSenderName);
 		$mailer->addAddress($this->email, $this->firstName . ' ' . $this->lastName);
 
-		if ($this->appointment->requireMailValidation && !$this->mailConfirmedAt) {
+		if ($this->appointment->requireMailValidation && !$this->confirmedAt) {
 			$mailer->Subject = $this->replacePlaceholders($this->appointment->mailSubjectValidate);
 			$mailer->Body = $this->replacePlaceholders($this->appointment->mailBodyValidate);
 		} else {
@@ -63,6 +66,34 @@ class Booking extends Model
 		} else {
 			throw new \Exception($mailer->ErrorInfo);
 		}
+	}
+
+	public function sendCancellationMail()
+	{
+		/** @var PHPMailer */
+		$mailer = app()->get(PHPMailer::class);
+
+		$mailer->setFrom($this->appointment->mailSender, $this->appointment->mailSenderName);
+		$mailer->addAddress($this->email, $this->firstName . ' ' . $this->lastName);
+
+		$mailer->Subject = $this->replacePlaceholders($this->appointment->mailSubjectCancellation);
+		$mailer->Body = $this->replacePlaceholders($this->appointment->mailBodyCancellation);
+
+		if ($mailer->send()) {
+			$this->mailSentAt = \dbdate();
+			$this->save();
+		} else {
+			throw new \Exception($mailer->ErrorInfo);
+		}
+	}
+
+	public function cancel($sendMail = true) {
+		if($sendMail) {
+			$this->sendCancellationMail();
+		}
+
+		$this->delete();
+
 	}
 
 	public function confirmUrl() {
@@ -118,6 +149,13 @@ class Booking extends Model
 		];
 
 		return str_replace(array_keys($placeholders), array_values($placeholders), $text);
+	}
+
+	public function delete() {
+		$this->slot->free++;
+		$this->slot->save();
+
+		parent::delete();
 	}
 
 }

@@ -26,7 +26,6 @@ const api = useApi();
 const bookings = ref<(Partial<Slot> & Booking)[]>([]);
 
 const fetchBookings = async () => {
-	console.log(props);
 	if(props.appointmentId) {
 		bookings.value = await api.$fetch('/api/v1/appointments/' + props.appointmentId + '/bookings');
 	} else if(props.slotId) {
@@ -61,7 +60,7 @@ const bookingsColumns = [
 	},
 	{
 		title: 'E-Mail bestätigt',
-		key: 'mailConfirmedAt'
+		key: 'confirmedAt'
 	},
 	{
 		title: 'Aktionen',
@@ -73,12 +72,7 @@ const bookingsColumns = [
 					type: 'primary',
 					class: 'mr-3',
 					onClick: () => {
-						api.$fetch(`/api/v1/bookings/${row.id}/send-mail`)
-							.then((response) => {
-								if(response.error) message.error(response.error);
-								else message.success('E-Mail wurde versandt');
-								fetchBookings();
-							});
+						modalBooking.value = row;
 					}
 				}, { default: () => 'Bearbeiten' }),
 				h(NButton, {

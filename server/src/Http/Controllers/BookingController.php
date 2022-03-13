@@ -44,6 +44,21 @@ class BookingController
 		return new JsonResponse($stats);
 	}
 
+	public function updateBooking(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$booking = Booking::find($params['id']);
+		if (!$booking) {
+			return new ResourceNotFoundJsonResponse();
+		}
+
+		$body = $request->getParsedBody();
+
+		$booking->fill($body, true);
+		$booking->save();
+
+		return new JsonResponse($booking);
+	}
+
 	public function bookAppointment(ServerRequestInterface $request, array $params): ResponseInterface
 	{
 		$body = $request->getParsedBody();
@@ -96,7 +111,7 @@ class BookingController
 				'comment' => $body['comment'] ?? null,
 				'timezone' => $body['timezone'],
 				'language' => $body['language'],
-				'mailConfirmedAt' => ($appointment->requireMailValidation ? null : \dbdate()),
+				'confirmedAt' => ($appointment->requireMailValidation ? null : \dbdate()),
 			]);
 		} catch (Exception $ex) {
 			return new JsonResponse(['error' => 'Buchung konnte nicht erstellt werden.'], 500);
@@ -108,9 +123,15 @@ class BookingController
 			'id' => $slotId
 		]);
 
-		$booking->sendMail();
+		$mailSuccess = true;
 
-		return new JsonResponse(['success' => 'Booking successful', 'bookingId' => $booking->id]);
+		try {			
+			$booking->sendMail();
+		} catch(Exception $ex) {
+			$mailSuccess = false;
+		}
+
+		return new JsonResponse(['success' => 'Booking successful', 'bookingId' => $booking->id, 'mailSuccess' => $mailSuccess]);
 	}
 
 	public function confirmBooking(ServerRequestInterface $request, array $params): ResponseInterface
@@ -127,11 +148,30 @@ class BookingController
 		}
 
 
-		$booking->mailConfirmedAt = \dbdate();
+		$booking->confirmedAt = \dbdate();
 		$booking->sendMail();
 		$booking->save();
 
 		return new JsonResponse(['success' => 'Booking confirmed']);
+	}
+
+
+	public function cancelBooking(ServerRequestInterface $request, array $params): ResponseInterface
+	{
+		$booking = Booking::find($params['id']);
+		if (!$booking) {
+			return new ResourceNotFoundJsonResponse();
+		}
+
+		$body = $request->getParsedBody();
+
+		if($booking->cancellationEnabled || app()->get('user') !== null) {
+			if ($booking->cancel($body['sendCancellationMail'] ?? true)) {
+				return new JsonResponse(['success' => 'Buchung storniert.']);
+			} 
+		}
+
+		return new JsonResponse(['error' => 'Buchung konnte nicht storniert werden.'], 500);
 	}
 
 	public function sendMail(ServerRequestInterface $request, array $params): ResponseInterface
@@ -147,6 +187,5 @@ class BookingController
 		} catch (\Exception $e) {
 			return new JsonResponse(['error' => $e->getMessage()], 500);
 		}
-		
 	}
 }
