@@ -34,21 +34,23 @@ const menuOptions = [
 </script>
 
 <template>
-	<div class="flex mt-3 items-center">		
-		<n-menu class="flex-grow" v-model:value="activeKey" :options="menuOptions" mode="horizontal" />
-		<n-button tag="a" :href="'/' + route.params.id" target="_blank" class="mr-5" type="primary">
-			<template #icon>
-				<n-icon>
-					<LinkIcon />
-				</n-icon>
-			</template>
-			Buchungslink
-		</n-button>
-	</div>
+	<div class="flex flex-col h-full">
+		<div class="flex mt-3 items-center">		
+			<n-menu class="flex-grow" v-model:value="activeKey" :options="menuOptions" mode="horizontal" />
+			<n-button tag="a" :href="'/' + route.params.id" target="_blank" class="mr-5" type="primary">
+				<template #icon>
+					<n-icon>
+						<LinkIcon />
+					</n-icon>
+				</template>
+				Buchungslink
+			</n-button>
+		</div>
 
-	<n-hr />
+		<n-hr />
 
-	<div class="p-5 pt-1">
-		<router-view />
+		<div class="p-5 pt-1 flex-grow">
+			<router-view />
+		</div>
 	</div>
 </template>

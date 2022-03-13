@@ -142,7 +142,7 @@ const modalClose = function () {
 			<slot-modal v-if="modalSlot != null" v-model="modalSlot" @close="modalClose" />
 		</div>
 	</n-modal>
-	<div class="flex flex-col items-stretch">
+	<div class="flex flex-col h-full">
 		<div class="flex items-center">
 			<span>Erstelle</span>
 			<n-input-number v-model:value="batchCreateSlotsConfig.duration" class="mx-3" />
@@ -163,7 +163,7 @@ const modalClose = function () {
 			class="mb-5 mt-2 italic"
 		>Daten und Zeit werden seperat betrachtet, d.h. es wird an den jeweiligen Tagen jeweils Terminslots zwischen den Zeiten erstellt und nicht über Nacht.</div>
 
-		<div class>
+		<div class="flex-grow">
 			<vue-cal
 				:selected-date="selectedDate"
 				:drag-to-create-threshold="0"
