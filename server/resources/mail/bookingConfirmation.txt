@@ -1,0 +1,8 @@
+Sehr geehrte/r {firstName} {lastName}, 
+
+ihre Buchung für {appointmentName} am {appointmentDate} {appointmentTime} wird hiermit bestätigt.
+
+{bookingDetail}
+
+Mit freundlichen Grüßen,
+{mailSenderName}

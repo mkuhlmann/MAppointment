@@ -21,7 +21,10 @@ function nanoid($size = 21) : string {
 	return Helper::nanoid($size);
 }
 
-function tzdate($format, $timestamp = null, $timezone = 'UTC') {
+function tzdate(string $format, string|int $timestamp = null, string $timezone = 'UTC'): string {
+	if(!is_numeric($timestamp)) {
+		$timestamp = strtotime($timestamp);
+	}
 	date_default_timezone_set($timezone);
 	$time = date($format, $timestamp ?: time());
 	date_default_timezone_set('UTC');

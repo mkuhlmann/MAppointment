@@ -10,7 +10,7 @@ RUN apk add --no-cache nginx git openrc zip openssh curl
 
 RUN apk add --no-cache \
   php8-common php8 php8-curl php8-fileinfo php8-fpm php8-gd php8-iconv php8-intl php8-mbstring \
-  php8-opcache php8-openssl php8-pdo php8-pdo_sqlite php8-phar \
+  php8-opcache php8-openssl php8-pdo php8-pdo_sqlite php8-pdo_mysql php8-phar \
 	&& curl -sS https://getcomposer.org/installer | php8 -- --install-dir=/usr/local/bin --filename=composer
 
 # make sure php runs with same uid as nginx

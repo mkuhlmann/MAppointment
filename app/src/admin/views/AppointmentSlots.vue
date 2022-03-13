@@ -18,6 +18,8 @@ const message = useMessage();
 
 const route = useRoute();
 
+const selectedDate = ref(new Date());
+
 const fetchSlots = async function () {
 	let res = await api.$fetch(`/api/v1/appointments/${route.params.id}/slots`);
 
@@ -126,7 +128,6 @@ const onEventClick = function ($event: any) {
 
 const modalSlot = ref<Partial<Slot> | null>(null);
 const modalClose = function () {
-	console.log('close');
 	modalSlot.value = null;
 	fetchSlots().then();
 
@@ -136,14 +137,12 @@ const modalClose = function () {
 
 
 <template>
-<n-modal :show="modalSlot != null" :mask-closable="true">
-			<div class="w-1/2">
-				<slot-modal v-if="modalSlot != null" v-model="modalSlot" @close="modalClose" />
-			</div>
-		</n-modal>
+	<n-modal :show="modalSlot != null" :mask-closable="true">
+		<div class="w-1/2">
+			<slot-modal v-if="modalSlot != null" v-model="modalSlot" @close="modalClose" />
+		</div>
+	</n-modal>
 	<div class="flex flex-col items-stretch">
-		
-
 		<div class="flex items-center">
 			<span>Erstelle</span>
 			<n-input-number v-model:value="batchCreateSlotsConfig.duration" class="mx-3" />
@@ -153,16 +152,20 @@ const modalClose = function () {
 				type="datetimerange"
 				class="mx-3"
 			/>
-			<n-button type="primary" @click="batchCreateSlots" :loading="batchCreateSlotsStatus > 0">Erstellen</n-button>
+			<n-button
+				type="primary"
+				@click="batchCreateSlots"
+				:loading="batchCreateSlotsStatus > 0"
+			>Erstellen</n-button>
 			<span v-if="batchCreateSlotsStatus > 0">{{ batchCreateSlotsStatus }} Termine erstellt...</span>
 		</div>
 		<div
 			class="mb-5 mt-2 italic"
 		>Daten und Zeit werden seperat betrachtet, d.h. es wird an den jeweiligen Tagen jeweils Terminslots zwischen den Zeiten erstellt und nicht über Nacht.</div>
 
-		<div class="">
+		<div class>
 			<vue-cal
-				:selected-date="new Date()"
+				:selected-date="selectedDate"
 				:drag-to-create-threshold="0"
 				:snap-to-time="5"
 				:editable-events="{ title: false, drag: true, resize: true, delete: true, create: true }"
@@ -171,8 +174,14 @@ const modalClose = function () {
 				:drag-to-create-event="true"
 				@event-drag-create="onEventCreate"
 				@event-change="onEventChange"
-				@event-click="onEventClick"
+				:on-event-click="onEventClick"
 			></vue-cal>
 		</div>
 	</div>
 </template>
+
+<style>
+html.dark .vuecal__header button {
+	color: rgba(255, 255, 255, 0.82);
+}
+</style>

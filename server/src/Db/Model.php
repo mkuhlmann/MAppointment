@@ -17,7 +17,6 @@ use Rakit\Validation\Rules\Nullable;
 class Model implements \ArrayAccess, \JsonSerializable 
 {
 	protected static string $table;
-	protected static string $primaryKey = 'id';
 
 	protected $exists = false;
 
@@ -41,6 +40,14 @@ class Model implements \ArrayAccess, \JsonSerializable
      * @var string[]
      */
 	protected array $guarded = ['*'];
+
+
+	protected bool $timestamps = true;
+	
+	const PRIMARY_KEY = 'id';
+	const CREATED_AT = 'createdAt';
+	const UPDATED_AT = 'updatedAt';
+
 
 	public function __construct(array $attributes = [])
 	{
@@ -84,6 +91,8 @@ class Model implements \ArrayAccess, \JsonSerializable
 		foreach ($attributes as $key => $value) {
 			if($this->isFillable($key)) {
 				$this->setAttribute($key, $value);
+			} else {
+				throw new InvalidArgumentException("Attribute $key is not fillable");
 			}
 		}
 	}
@@ -105,7 +114,7 @@ class Model implements \ArrayAccess, \JsonSerializable
 			return $this->cachedRelations[$className];
 		}
 
-		$ownerKey = $ownerKey ?? $className::$primaryKey;
+		$ownerKey = $ownerKey ?? $className::PRIMARY_KEY;
 
 		$classNameShort = (new \ReflectionClass($className))->getShortName();
 		$foreignKey = $foreignKey ?? strtolower($classNameShort) . 'Id';
@@ -120,7 +129,7 @@ class Model implements \ArrayAccess, \JsonSerializable
 			return $this->cachedRelations[$className];
 		}
 
-		$owerKey = $ownerKey ?? $className::$primaryKey;
+		$owerKey = $ownerKey ?? $className::PRIMARY_KEY;
 
 		$classNameShort = (new \ReflectionClass(static::class))->getShortName();
 		$foreignKey = $foreignKey ?? $classNameShort . 'Id';
@@ -142,14 +151,20 @@ class Model implements \ArrayAccess, \JsonSerializable
 
 	public function insert()
 	{
-		if (!isset($this->attributes[static::$primaryKey])) {
-			$this->attributes[static::$primaryKey] = nanoid();
+		if (!isset($this->attributes[static::PRIMARY_KEY])) {
+			$this->setAttribute(static::PRIMARY_KEY, \nanoid());
 		}
 
+		if($this->timestamps) {
+			$this->setAttribute(static::CREATED_AT, date('Y-m-d H:i:s'));
+			$this->setAttribute(static::UPDATED_AT, date('Y-m-d H:i:s'));
+		}
+
+		static::getDb()->insert(static::getTableName(), $this->changes);
+		
 		$this->exists = true;
 		$this->original = $this->attributes;
 		$this->changes = [];
-		static::getDb()->insert(static::getTableName(), $this->attributes);
 	}
 
 	public function update()
@@ -161,7 +176,11 @@ class Model implements \ArrayAccess, \JsonSerializable
 			throw new \Exception('Cannot update a model that does not exist');
 		}
 
-		static::getDb()->update(static::getTableName(), $this->changes, [static::$primaryKey => $this->attributes[static::$primaryKey]]);
+		if($this->timestamps) {
+			$this->setAttribute(static::UPDATED_AT, date('Y-m-d H:i:s'));
+		}
+
+		static::getDb()->update(static::getTableName(), $this->changes, [static::PRIMARY_KEY => $this->attributes[static::PRIMARY_KEY]]);
 
 		$this->original = $this->attributes;
 		$this->changes = [];
@@ -169,7 +188,7 @@ class Model implements \ArrayAccess, \JsonSerializable
 
 	public function delete()
 	{
-		static::getDb()->delete(static::getTableName(), [static::$primaryKey => $this->attributes[static::$primaryKey]]);
+		static::getDb()->delete(static::getTableName(), [static::PRIMARY_KEY => $this->attributes[static::PRIMARY_KEY]]);
 	}
 
 	/** Magic methods */
@@ -296,7 +315,7 @@ class Model implements \ArrayAccess, \JsonSerializable
 	public static function find($id)
 	{
 		$db = self::getDb();
-		return static::fromRow($db->row('SELECT * FROM ' . static::getTableName() . ' WHERE ' . static::$primaryKey . ' = ?', $id));
+		return static::fromRow($db->row('SELECT * FROM ' . static::getTableName() . ' WHERE ' . static::PRIMARY_KEY . ' = ?', $id));
 	}
 
 	public static function findOrFail($id) {

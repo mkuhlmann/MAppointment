@@ -11,6 +11,7 @@ const credentials = reactive({ username: '', password: '', remember: true });
 
 const loginFailed = ref(false);
 const isLoading = ref(false);
+const isFirstLogin = ref(false);
 
 const login = async function () {
 	isLoading.value = true;
@@ -24,6 +25,11 @@ const login = async function () {
 };
 
 onMounted(async () => {
+
+	api.$fetch('/api/v1/auth/is-first-login').then(res => {
+		isFirstLogin.value = res;
+	});
+
 	if(api.isSignedIn() &&  !(await fetchUser()).error) {
 		router.push('/');
 	}
@@ -34,11 +40,16 @@ onMounted(async () => {
 <template>
 	<div class="page-container">
 		<n-card class="auth-card" title="MAppointment &mdash; Anmeldung">
-			<n-form :model="credentials"  v-on:submit="login">
-				<n-form-item item path="firstName" label="Nutzer">
+			<n-alert v-if="isFirstLogin" type="info" title="Willkommen bei MAppointment!" class="mb-5">
+				<p>
+					Bitte legen Sie den ersten Benutzer an.
+				</p>
+			</n-alert>
+			<n-form :model="credentials" v-on:submit="login">
+				<n-form-item item path="username" label="Nutzer">
 					<n-input v-model:value="credentials.username" placeholder="Nuter / E-Mail" />
 				</n-form-item>
-				<n-form-item item path="lastName" label="Passwort">
+				<n-form-item item path="password" label="Passwort">
 					<n-input
 						type="password"
 						show-password-on="click"

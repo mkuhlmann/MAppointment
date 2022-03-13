@@ -21,6 +21,8 @@ use PHPMailer\PHPMailer\PHPMailer;
  * @property string $email
  * @property string $phone
  * @property string $comment
+ * @property string $timezone
+ * @property string $language
  * 
  * @property string $createdAt
  * @property string $updatedAt
@@ -51,8 +53,8 @@ class Booking extends Model
 			$mailer->Subject = $this->replacePlaceholders($this->appointment->mailSubjectValidate);
 			$mailer->Body = $this->replacePlaceholders($this->appointment->mailBodyValidate);
 		} else {
-			$mailer->Subject = $this->replacePlaceholders($this->appointment->mailSubject);
-			$mailer->Body = $this->replacePlaceholders($this->appointment->mailBody);
+			$mailer->Subject = $this->replacePlaceholders($this->appointment->mailSubjectConfirmation);
+			$mailer->Body = $this->replacePlaceholders($this->appointment->mailBodyConfirmation);
 		}
 
 		if ($mailer->send()) {
@@ -79,8 +81,8 @@ class Booking extends Model
 			'Name' => $this->firstName . ' ' . $this->lastName,
 			'E-Mail' => $this->email,
 			'Kommentar' => $this->comment,
-			'Datum' => date('d.m.Y', strtotime($this->slot->date)),
-			'Uhrzeit' => $this->slot->time,
+			'Datum' => tzdate('d.m.Y', $this->slot->start, $this->timezone),
+			'Uhrzeit' => tzdate('H:i', $this->slot->start, $this->timezone),
 			'Buchungsnummer' => $this->id,
 			'Buchung verwalten' => $this->url(),
 		];
@@ -106,14 +108,16 @@ class Booking extends Model
 			'{phone}' => $this->phone,
 			'{comment}' => $this->comment,
 			'{appointmentName}' => $this->appointment->name,
-			'{appointmentDate}' => $this->appointment->date,
-			'{appointmentTime}' => $this->appointment->time,
+			'{appointmentDate}' => tzdate('d.m.Y', $this->slot->start, $this->timezone),
+			'{appointmentTime}' => tzdate('H:i', $this->slot->start, $this->timezone),
 			'{appointmentLocation}' => $this->appointment->location,
 			'{confirmUrl}' => $this->confirmUrl(),
 			'{url}' => $this->url(),
 			'{bookingDetail}' => $this->mailDetails($isHtml),
+			'{mailSenderName}' => $this->appointment->mailSenderName
 		];
 
 		return str_replace(array_keys($placeholders), array_values($placeholders), $text);
 	}
+
 }

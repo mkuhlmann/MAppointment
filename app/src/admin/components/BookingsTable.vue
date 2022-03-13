@@ -1,9 +1,12 @@
 <script lang="ts" setup>
-import { NIcon, NButton, NDataTable, DataTableColumns, NH2, useMessage } from 'naive-ui';
+import { NIcon, NButton, NDataTable, DataTableColumns, NH2, useMessage, NModal } from 'naive-ui';
 import { ref, h } from 'vue';
 import DocumentDownloadIcon from '@vicons/carbon/DocumentDownload';
 import { Slot, Booking } from '@/types';
 import { useApi } from '@/shared/composables/api';
+
+import BookingModal from './Booking.vue';
+
 
 const message = useMessage();
 
@@ -64,16 +67,32 @@ const bookingsColumns = [
 		title: 'Aktionen',
 		key: 'actions',
 		render: (row) => {
-			return h(NButton, {
-				size: 'small', onClick: () => {
-					api.$fetch(`/api/v1/bookings/${row.id}/send-mail`)
-						.then((response) => {
-							if(response.error) message.error(response.error);
-							else message.success('E-Mail wurde versandt');
-							fetchBookings();
-						});
-				}
-			}, { default: () => 'E-Mail senden' });
+			return h('div', {}, [
+				h(NButton, {
+					size: 'small',
+					type: 'primary',
+					class: 'mr-3',
+					onClick: () => {
+						api.$fetch(`/api/v1/bookings/${row.id}/send-mail`)
+							.then((response) => {
+								if(response.error) message.error(response.error);
+								else message.success('E-Mail wurde versandt');
+								fetchBookings();
+							});
+					}
+				}, { default: () => 'Bearbeiten' }),
+				h(NButton, {
+					size: 'small',
+					onClick: () => {
+						api.$fetch(`/api/v1/bookings/${row.id}/send-mail`)
+							.then((response) => {
+								if(response.error) message.error(response.error);
+								else message.success('E-Mail wurde versandt');
+								fetchBookings();
+							});
+					}
+				}, { default: () => 'E-Mail senden' })
+			]);
 		}
 	}
 ] as DataTableColumns;
@@ -98,9 +117,23 @@ const downloadCsv = function() {
 
 fetchBookings().then();
 
+const modalBooking = ref<Partial<Booking> | null>(null);
+const modalClose = function () {
+	modalBooking.value = null;
+	fetchBookings().then();
+
+};
+
 </script>
 
 <template>
+
+	<n-modal :show="modalBooking != null" :mask-closable="true">
+		<div class="w-1/2">
+			<BookingModal v-if="modalBooking != null" v-model="modalBooking" @close="modalClose" />
+		</div>
+	</n-modal>
+
 	<div class="mb-5">
 		<n-button type="info" @click="downloadCsv">
 			<template #icon>

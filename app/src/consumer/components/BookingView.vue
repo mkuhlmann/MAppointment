@@ -52,6 +52,8 @@ onMounted(async () => {
 <template>
 	<n-spin :show="isLoading">
 		<n-card v-if="!isLoading" class="booking-container" :title="appointment.name" size="huge">
+			<div class="mt-5"></div>
+			
 			<n-result
 				v-if="appointment.requireMailValidation && !booking.mailConfirmedAt"
 				class="my-5"
@@ -69,13 +71,9 @@ onMounted(async () => {
 
 			<n-divider />
 
-
 			<render-markdown v-if="appointment.description" :markdown="appointment.description" />
-			<div v-if="!appointment.description" class="mt-5"></div>
 
-			
-
-			<n-table>
+			<n-table class="mt-5">
 				<tbody>
 					<tr>
 						<td>Vorname</td>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ServiceProvider;
+namespace App\Providers;
 
 use App\Application;
 use App\Db\DatabaseManager;

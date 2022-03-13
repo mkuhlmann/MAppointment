@@ -1,18 +1,25 @@
 <script setup lang="ts">
 import { ref, toRefs, inject, computed } from 'vue'
-import { NCard, NSteps, NStep, NForm, NFormItem, NInput, FormRules, NDivider, NButton, NSpace, NSpin, NText, NP, NH2, NResult, NA, NTable, NAlert } from 'naive-ui';
-import { Calendar } from 'v-calendar';
 import { useRouter, useRoute } from 'vue-router';
+import { useDark, useNavigatorLanguage, useTitle } from '@vueuse/core';
+
+import { NCard, NSteps, NStep, NForm, NFormItem, NInput, FormRules, NDivider, NButton, NSpace, NSpin, NText, NP, NH2, NResult, NA, NTable, NAlert } from 'naive-ui';
+
+import { Calendar } from 'v-calendar';
+import 'v-calendar/dist/style.css';
+
 import dayjs from 'dayjs';
+import dayjsTz from 'dayjs/plugin/timezone';
+
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet';
 import 'leaflet/dist/leaflet.css';
-import 'v-calendar/dist/style.css';
-import { useTitle } from '@vueuse/core';
 
 import RenderMarkdown from '@/shared/components/RenderMarkdown.vue';
 
 import { useApi } from '@/shared/composables/api';
 import { Appointment } from '@/types';
+
+dayjs.extend(dayjsTz);
 
 const windowTitle = useTitle();
 const api = useApi();
@@ -20,7 +27,9 @@ const api = useApi();
 const route = useRoute();
 const router = useRouter();
 const $isMobileScreen = inject<boolean>('$isMobileScreen');
-const $isDarkMode = inject<boolean>('$isDarkMode');
+
+const isDark = useDark();
+const navigatorLanguage = useNavigatorLanguage();
 
 const step = ref(1);
 const isLoading = ref(true);
@@ -30,17 +39,10 @@ const booking = ref({
 	firstName: '',
 	lastName: '',
 	email: '',
-	comment: ''
+	comment: '',
+	timezone: dayjs.tz.guess(),
+	language: navigatorLanguage.language.value
 });
-
-if(import.meta.env.MODE == 'development') {
-	booking.value = {
-		firstName: 'John',
-		lastName: 'Doe',
-		email: 'john.doe@example.com',
-		comment: 'Example comment with emoji 🤓'
-	};
-}
 
 const bookingFormRef = ref<HTMLFormElement>();
 
@@ -83,7 +85,7 @@ let appointmentData = api.$fetch('/api/v1/appointments/' + route.params.id, { th
 	.then(async _appointment => {
 		appointment.value = _appointment;
 
-		if(!_appointment.isActive) {
+		if (!_appointment.isActive) {
 			step.value = -1;
 			isLoading.value = false;
 			return;
@@ -132,13 +134,16 @@ const submitBooking = async function () {
 			firstName: booking.value.firstName,
 			lastName: booking.value.lastName,
 			email: booking.value.email,
-			comment: booking.value.comment
+			comment: booking.value.comment,
+
+			timezone: booking.value.timezone,
+			language: booking.value.language
 		}
 	});
 
 	if (response.success) {
 		router.push(`/booking/${response.bookingId}?e=s`);
-	} else {		
+	} else {
 		isLoading.value = false;
 	}
 
@@ -149,22 +154,33 @@ const submitBooking = async function () {
 
 <template>
 	<n-spin :show="isLoading">
-		<n-card v-if="!isLoading" class="booking-container sm:border-0" :title="appointment.name" size="large">
+		<n-card
+			v-if="!isLoading"
+			class="booking-container sm:border-0"
+			:title="appointment.name"
+			size="large"
+		>
+			<RenderMarkdown v-if="appointment.description" :markdown="appointment.description" class="mt-5" />
 			
-			<render-markdown v-if="appointment.description" :markdown="appointment.description" />
-			<div v-if="!appointment.description" class="mt-5"></div>
-			
+			<div class="mt-5"></div>
+
 			<div v-if="step == -1">
-				<n-alert type="info">
-					Buchungen aktuell nicht möglich.
-				</n-alert>
+				<n-alert type="info">Buchungen aktuell nicht möglich.</n-alert>
 			</div>
 
 			<div v-if="step == 1">
+				<n-table class="mb-5" v-if="appointment.location">
+					<tbody>
+						<tr v-if="appointment.location">
+							<td>Veranstaltungsort</td>
+							<td>{{ appointment.location }}</td>
+						</tr>
+					</tbody>
+				</n-table>
 				<calendar
 					:available-dates="availableDates"
 					:is-expanded="true"
-					:is-dark="$isDarkMode"
+					:is-dark="isDark"
 					v-on:dayclick="chooseDate"
 					color="gray"
 				/>
@@ -201,6 +217,10 @@ const submitBooking = async function () {
 			<div v-if="step == 2">
 				<n-table class="mb-5">
 					<tbody>
+						<tr v-if="appointment.location">
+							<td>Veranstaltungsort</td>
+							<td>{{ appointment.location }}</td>
+						</tr>
 						<tr>
 							<td>Termin</td>
 							<td>{{ dayjs.utc(chosenSlot.start).local().format('dddd, DD.MM.YYYY') }}</td>
@@ -241,9 +261,12 @@ const submitBooking = async function () {
 			<div v-if="step == 3">
 				<n-h2>Buchungsübersicht</n-h2>
 
-				<n-alert v-if="bookingResponse.error" type="error" title="Buchung fehlgeschlagen" class="mb-5">
-					{{ bookingResponse.error}}
-				</n-alert>
+				<n-alert
+					v-if="bookingResponse.error"
+					type="error"
+					title="Buchung fehlgeschlagen"
+					class="mb-5"
+				>{{ bookingResponse.error }}</n-alert>
 
 				<n-table>
 					<tbody>
@@ -289,14 +312,17 @@ const submitBooking = async function () {
 			<n-steps :vertical="$isMobileScreen" :current="step">
 				<n-step title="Datum & Zeit" description="auswählen" />
 				<n-step title="Kontaktdaten" description="angeben" />
-				<n-step title="Bestätitung" description="erhalten" />
+				<n-step title="Buchung" description="bestätigen" />
 			</n-steps>
 
 			<n-divider />
 
 			<n-space justify="space-between">
 				<n-text depth="3">Datenschutz &mdash; Impressum</n-text>
-				<n-text depth="3">Realisiert durch <n-a href="https://github.com/mkuhlmann/MAppointment" target="_blank">MAppointment</n-a></n-text>
+				<n-text depth="3">
+					Realisiert durch
+					<n-a href="https://github.com/mkuhlmann/MAppointment" target="_blank">MAppointment</n-a>
+				</n-text>
 			</n-space>
 		</n-card>
 	</n-spin>

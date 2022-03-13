@@ -14,10 +14,13 @@ export type Appointment = {
 
 	mailSender?: string;
 	mailSenderName?: string;
-	mailSubject?: string;
-	mailSubjectValidate?: string;
-	mailBody?: string;
+	
+	mailSubjectConfirmation?: string;	
+	mailBodyConfirmation?: string;
+	mailBodyCancellation?: string;
+	mailSubjectCancellation?: string;
 	mailBodyValidate?: string;
+	mailSubjectValidate?: string;
 
 	updatedAt: Date;
 	createdAt: Date;

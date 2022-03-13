@@ -30,6 +30,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	});
 
 	// authentication
+	$route->get('/auth/is-first-login', [AuthController::class, 'isFirstUser']);
 	$route->post('/auth/login', [AuthController::class, 'login']);
 	$route->get('/auth/user', [AuthController::class, 'getUser'])->middleware($auth);
 

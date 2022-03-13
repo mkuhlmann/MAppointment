@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Db\Migrations;
 
@@ -38,10 +38,12 @@ class Migration_20211916_Initial implements MigrationInterface {
 
 				`mailSender` varchar(255),
 				`mailSenderName` varchar(255),
-				`mailSubject` varchar(255),
 				`mailSubjectValidate` varchar(255),
-				`mailBody` text,
 				`mailBodyValidate` text,
+				`mailSubjectConfirmation` varchar(255),
+				`mailBodyConfirmation` text,
+				`mailSubjectCancellation` varchar(255),
+				`mailBodyCancellation` text,
 
 				`requireMailValidation` tinyint(1) NOT NULL DEFAULT 0,
 				`requirePhoneNumber` tinyint(1) NOT NULL DEFAULT 0,

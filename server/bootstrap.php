@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-use Laminas\Diactoros\Response\JsonResponse;
-
 date_default_timezone_set('UTC');
 
-include 'vendor/autoload.php';
-include 'helpers.php';
+require 'vendor/autoload.php';
+require 'helpers.php';
 
 /** .dotenv */
 $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__FILE__) . '/..');
@@ -26,29 +24,6 @@ $container
 	->add(\Psr\Container\ContainerInterface::class, $container)
 	->setShared(true);
 
-$container->addServiceProvider(new \App\ServiceProvider\ApplicationServiceProvider());
-$container->addServiceProvider(new \App\ServiceProvider\RouteServiceProvider());
-$container->addServiceProvider(new \App\ServiceProvider\MailServiceProvider());
-
-$app = $container->get(\App\Application::class);
-$router = $container->get(\League\Route\Router::class);
-
-$request = Laminas\Diactoros\ServerRequestFactory::fromGlobals(
-	$_SERVER,
-	$_GET,
-	$_POST,
-	$_COOKIE,
-	$_FILES
-);
-
-
-/** Let's go. */
-try {
-	$response = $router->dispatch($request);
-} catch (\League\Route\Http\Exception\NotFoundException $e) {
-	$response = new \Laminas\Diactoros\Response\HtmlResponse(file_get_contents(__DIR__ . '/public/index.html'));
-} catch (\Exception $e) {
-	$reponse = new JsonResponse(['error' => $e->getMessage()]);
-}
-
-(new Laminas\HttpHandlerRunner\Emitter\SapiEmitter())->emit($response);
+$container->addServiceProvider(new \App\Providers\ApplicationServiceProvider());
+$container->addServiceProvider(new \App\Providers\RouteServiceProvider());
+$container->addServiceProvider(new \App\Providers\MailServiceProvider());

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Helper;
 use App\Http\JsonNumericAwareResponse;
 use App\Http\ResourceNotFoundJsonResponse;
+use App\Models\Appointment;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -27,15 +28,15 @@ class AppointmentController
 	{
 		$body = $request->getParsedBody();
 
-		$id = \nanoid();	
-			
-		$this->db->insert('appointments', [
-			'id' => $id,
-			'organizationId' => app()->get('user')['organizationId'],
+		$appointment = new Appointment([
+			'organizationId' => app()->get('user')->organizationId,			
 			'name' => $body['name'] ?? 'New Appointment',
 		]);
 
-		return new JsonResponse($this->db->row('SELECT * FROM appointments WHERE id = ?', $id));
+		$appointment->fillDefaultMailTemplate();
+		$appointment->save();
+
+		return new JsonResponse($appointment);
 	}
 
 	public function getAppointments(ServerRequestInterface $request, array $params): ResponseInterface
@@ -46,31 +47,32 @@ class AppointmentController
 
 	public function updateAppointment(ServerRequestInterface $request, array $params): ResponseInterface
 	{
-		$appointment = $this->db->row('SELECT * FROM appointments WHERE id = ?', $params['id']);
+		$appointment = Appointment::find($params['id']);
 		if (!$appointment) return new ResourceNotFoundJsonResponse();
 
 		$body = $request->getParsedBody();
 
-		$this->db->update(
-			'appointments',
-			[
-				'name' => $body['name'],
-				'description' => $body['description'],
-				'isActive' => $body['isActive'] ? 1 : 0,
-				'requireMailValidation' => $body['requireMailValidation'] ? 1 : 0,
-				'requirePhoneNumber' => $body['requirePhoneNumber'] ? 1 : 0,
-				'mailSender' => $body['mailSender'],
-				'mailSenderName' => $body['mailSenderName'],
-				'mailSubject' => $body['mailSubject'],
-				'mailBody' => $body['mailBody'],
-				'mailSubjectValidate' => $body['mailSubjectValidate'],
-				'mailBodyValidate' => $body['mailBodyValidate'],
-				'updatedAt' => \dbdate()
-			],
-			['id' => $params['id']]
-		);
+		$appointment->fill([
+			'name' => $body['name'],
+			'location' => $body['location'],
+			'longitude' => $body['longitude'],
+			'latitude' => $body['latitude'],
+			'description' => $body['description'],
+			'isActive' => $body['isActive'] ? 1 : 0,
+			'requireMailValidation' => $body['requireMailValidation'] ? 1 : 0,
+			'requirePhoneNumber' => $body['requirePhoneNumber'] ? 1 : 0,
+			'mailSender' => $body['mailSender'],
+			'mailSenderName' => $body['mailSenderName'],
+			'mailSubjectConfirmation' => $body['mailSubjectConfirmation'],
+			'mailBodyConfirmation' => $body['mailBodyConfirmation'],
+			'mailSubjectValidate' => $body['mailSubjectValidate'],
+			'mailBodyValidate' => $body['mailBodyValidate'],
+			'mailSubjectCancellation' => $body['mailSubjectCancellation'],
+			'mailBodyCancellation' => $body['mailBodyCancellation']
+		]);
+		$appointment->save();
 
-		return $this->getAppointment($request, $params);
+		return new JsonNumericAwareResponse($appointment);
 	}
 	
 	

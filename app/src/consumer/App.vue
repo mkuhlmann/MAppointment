@@ -1,16 +1,23 @@
 <script lang="ts" setup>
-import { defineComponent, ref, inject } from 'vue';
+import { defineComponent, ref, inject, computed } from 'vue';
 import { darkTheme, NConfigProvider, NCard, NLayout, NSpace, NSteps, NStep } from 'naive-ui';
+import { useDark } from '@vueuse/core';
 
-const $isDarkMode = inject<boolean>('$isDarkMode');
-const useDarkMode = ($isDarkMode) ? darkTheme : null;
+const isDark = useDark();
+const useDarkMode = computed(() => {
+	if(isDark.value) {
+		return darkTheme;
+	}
+	return null;
+});
+
 const step = ref(1);
 </script>
 
 <template>
 	<n-config-provider :theme="useDarkMode">
 		<n-layout class="n-layout" position="absolute">
-			<div class="page-container" v-bind:class="{ 'bg-gray-100': !$isDarkMode }">
+			<div class="page-container" v-bind:class="{ 'bg-gray-100': !isDark }">
 				<router-view></router-view>
 			</div>
 		</n-layout>		

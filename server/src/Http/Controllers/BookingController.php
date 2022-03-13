@@ -6,6 +6,7 @@ use App\Helper;
 use App\Http\ResourceNotFoundJsonResponse;
 use App\Models\Appointment;
 use App\Models\Booking;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -54,7 +55,9 @@ class BookingController
 			'slotId' => 'required',
 			'firstName' => 'required',
 			'lastName' => 'required',
-			'email' => 'required|email'
+			'email' => 'required|email',
+			'timezone' => 'required',
+			'language' => 'required'
 		]);
 
 		if ($validation->fails()) {
@@ -68,14 +71,14 @@ class BookingController
 		$slot = $this->db->row('SELECT * FROM slots WHERE id = ?', $slotId);
 
 		if ($appointment === null || $slot === null || $body['appointmentId'] !== $appointment['id']) {
-			return new JsonResponse(['error' => 'Appointment/Slot not found'], 404);
+			return new JsonResponse(['error' => 'Veranstaltung nicht gefunden.'], 404);
 		}
 
 		$appointmentSlotBookings = $this->db->run('SELECT * FROM bookings WHERE slotId = ?', $slotId);
 		$freeSlots = $slot['slots'] - count($appointmentSlotBookings);
 
 		if ($freeSlots <= 0) {
-			return new JsonResponse(['error' => 'No free slots available'], 400);
+			return new JsonResponse(['error' => 'Termin bereits belegt.'], 400);
 		}
 
 		$booking = $this->db->row('SELECT * FROM bookings WHERE email = ?', $body['email']);
@@ -83,18 +86,21 @@ class BookingController
 			return new JsonResponse(['error' => 'Buchung existiert bereits.'], 400);
 		}
 
-		$bookingSecret = Helper::nanoid();
-
-		$booking = Booking::create([
-			'secret' => $bookingSecret,
-			'slotId' => $slotId,
-			'firstName' => $body['firstName'],
-			'lastName' => $body['lastName'],
-			'email' => $body['email'],
-			'comment' => $body['comment'] ?? null,
-			'createdAt' => \dbdate(),
-			'updatedAt' => \dbdate()
-		]);
+		try {
+			$booking = Booking::create([
+				'secret' => \nanoid(),
+				'slotId' => $slotId,
+				'firstName' => $body['firstName'],
+				'lastName' => $body['lastName'],
+				'email' => $body['email'],
+				'comment' => $body['comment'] ?? null,
+				'timezone' => $body['timezone'],
+				'language' => $body['language'],
+				'mailConfirmedAt' => ($appointment->requireMailValidation ? null : \dbdate()),
+			]);
+		} catch (Exception $ex) {
+			return new JsonResponse(['error' => 'Buchung konnte nicht erstellt werden.'], 500);
+		}
 
 		$this->db->update('slots', [
 			'free' => $freeSlots - 1

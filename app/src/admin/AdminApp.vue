@@ -1,21 +1,32 @@
 <script lang="ts" setup>
-import { h, ref, inject, Component } from 'vue';
+import { h, ref, inject, Component, computed } from 'vue';
 import { darkTheme, NConfigProvider, NMessageProvider, NLayout, NIcon, NText, NLayoutHeader, NMenu, NLayoutSider, NButton } from 'naive-ui';
-import DashboardIcon from '@vicons/carbon/Dashboard';
-import CalendarIcon from '@vicons/carbon/Calendar';
-import UserIcon from '@vicons/carbon/User';
-import LogoutIcon from '@vicons/carbon/Logout';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { Key as MenuKey } from 'naive-ui/lib/menu/src/interface';
 import { useUser } from './composables/user';
 import { useApi } from '@/shared/composables/api';
+import { useDark, useToggle } from '@vueuse/core';
 
-const $isDarkMode = inject<boolean>('$isDarkMode');
-const useDarkMode = ($isDarkMode) ? darkTheme : null;
+import DashboardIcon from '@vicons/carbon/Dashboard';
+import CalendarIcon from '@vicons/carbon/Calendar';
+import UserIcon from '@vicons/carbon/User';
+import LogoutIcon from '@vicons/carbon/Logout';
+import MoonIcon from '@vicons/carbon/Moon';
+import SunIcon from '@vicons/carbon/Sun';
+
 const step = ref(1);
 const route = useRoute();
 const router = useRouter();
 const api = useApi();
+
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
+const useDarkMode = computed(() => {
+	if(isDark.value) {
+		return darkTheme;
+	}
+	return null;
+});
 
 const renderIcon = function (icon: Component) {
 	return () => h(NIcon, null, { default: () => h(icon) })
@@ -44,11 +55,6 @@ const menuOptions = [
 		label: () => renderMenuLabel('Veranstaltungen', '/appointments'),
 		key: 'Events',
 		icon: renderIcon(CalendarIcon)
-	},
-	{
-		label: () => 'Nutzer', //enderMenuLabel('Nutzer', '/users'),
-		key: 'Users',
-		icon: renderIcon(UserIcon)
 	}
 ];
 
@@ -64,7 +70,16 @@ const menuOptions = [
 				>
 					<n-text class="logo">MAppointment</n-text>
 					<div class="flex-grow"></div>
-					<div class="mr-5">{{ user?.username }}</div>
+					<n-button @click="toggleDark()">
+						<template #icon>
+							<n-icon>
+								<MoonIcon v-if="!isDark" />
+								<SunIcon v-if="isDark" />
+							</n-icon>
+						</template>
+					</n-button>
+					
+					<div class="mx-5">{{ user?.username }}</div>
 					<n-button v-if="user" @click="logout">
 						<template #icon>
 							<n-icon>
@@ -73,6 +88,7 @@ const menuOptions = [
 						</template>
 						Abmelden
 					</n-button>
+					
 				</n-layout-header>
 				<n-layout has-sider position="absolute" style="top: 64px;">
 					<n-layout-sider
@@ -85,7 +101,7 @@ const menuOptions = [
 					>
 						<n-menu v-model:value="activeKey" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" />
 					</n-layout-sider>
-					<n-layout v-bind:class="{ 'bg-warm-gray-100': !$isDarkMode }">
+					<n-layout v-bind:class="{ 'bg-warm-gray-100': !isDark }">
 						<router-view></router-view>
 					</n-layout>
 				</n-layout>

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\ServiceProvider;
+namespace App\Providers;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Route\Router;

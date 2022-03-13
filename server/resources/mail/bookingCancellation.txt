@@ -1,0 +1,6 @@
+Sehr geehrte/r {firstName} {lastName}, 
+
+ihre Buchung für {appointmentName} am {appointmentDate} {appointmentTime} wurde stoniert.
+
+Mit freundlichen Grüßen,
+{mailSenderName}

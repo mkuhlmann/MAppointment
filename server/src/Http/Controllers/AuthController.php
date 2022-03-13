@@ -76,6 +76,12 @@ class AuthController {
 		return new JsonResponse(['error' => 'invalid credentials']);		
 	}
 
+	public function isFirstUser(ServerRequestInterface $request): ResponseInterface
+	{
+		$userCount = $this->db->row('SELECT COUNT(*) as count FROM users');		
+		return new JsonResponse($userCount['count'] == 0);
+	}
+
 	public function getUser(ServerRequestInterface $request): ResponseInterface
 	{
 		return new JsonResponse($this->app->get('user'));
