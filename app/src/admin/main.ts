@@ -14,6 +14,7 @@ import IndexComponent from '../consumer/components/Index.vue';
 import AppointmentsComponent from './views/Appointments.vue';
 import LoginComponent from './views/Login.vue';
 import DashboardComponent from './views/Dashboard.vue';
+import AccountComponent from './views/Account.vue';
 
 import { useApi } from '@/shared/composables/api';
 import { fetchUser } from './composables/user';
@@ -33,6 +34,11 @@ const routes: RouteRecordRaw[] = [
 		path: '/appointments',
 		name: 'Events',
 		component: AppointmentsComponent
+	},
+	{
+		path: '/account',
+		name: 'Account',
+		component: AccountComponent
 	},
 	{
 		path: '/appointments/:id',

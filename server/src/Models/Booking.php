@@ -48,7 +48,7 @@ class Booking extends Model
 
 	public function isCancellable(): bool
 	{
-		return $this->appointment->cancellationEnabled && (time() - strtotime($this->slot->start)) > $this->appointment->cancellationDeadline * 60 || app()->get('user') != null;
+		return $this->appointment->cancellationEnabled && (strtotime($this->slot->start) - time()) > $this->appointment->cancellationDeadline * 60 || app()->get('user') != null;
 	}
 
 	public function sendMail()

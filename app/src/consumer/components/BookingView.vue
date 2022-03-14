@@ -60,7 +60,7 @@ onMounted(async () => {
 		slot.value = _slot;
 		let _appointment = await api.$fetch(`/api/v1/appointments/${_slot.appointmentId}`);
 		appointment.value = _appointment;
-		canCancelBooking.value = _appointment.cancellationEnabled && ( dayjs().unix() - dayjs.utc(_slot.start).unix()) > _appointment.cancellationDeadline * 60;
+		canCancelBooking.value = _appointment.cancellationEnabled && ( dayjs.utc(_slot.start).unix() - dayjs().unix() ) > _appointment.cancellationDeadline * 60;
 	} catch (e) {
 		console.log(e);
 	}
@@ -107,6 +107,10 @@ onMounted(async () => {
 						<td>E-Mail</td>
 						<td>{{ booking.email }}</td>
 					</tr>
+					<tr v-if="booking.phone?.length > 0">
+						<td>Telefon</td>
+						<td>{{ booking.phone }}</td>
+					</tr>
 					<tr>
 						<td>Termin</td>
 						<td>{{ dayjs.utc(slot.start).local().format('dddd, DD.MM.YYYY') }}</td>
@@ -135,8 +139,11 @@ onMounted(async () => {
 			<n-divider />
 
 			<n-space justify="space-between">
-				<n-text depth="3">Datenschutz &mdash; Impressum</n-text>
-				<n-text depth="3">Realisiert durch MAppointment</n-text>
+				<n-text depth="3"></n-text>
+				<n-text depth="3">
+					Realisiert durch
+					<n-a href="https://github.com/mkuhlmann/MAppointment" target="_blank">MAppointment</n-a>
+				</n-text>
 			</n-space>
 		</n-card>
 	</n-spin>

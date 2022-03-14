@@ -38,6 +38,7 @@ const slotsLoading = ref(false);
 const booking = ref({
 	firstName: '',
 	lastName: '',
+	phone: '',
 	email: '',
 	comment: '',
 	timezone: dayjs.tz.guess(),
@@ -74,7 +75,17 @@ const formRules: FormRules = {
 			return true;
 		},
 		trigger: ['input', 'blur']
-	}
+	},
+	phone: {
+		required: false,
+		validator: function (rule, value) {
+			if ((appointment.value.requirePhoneNumber || value.trim().length > 0) && !/^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d+)\)?)[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$/i.test(value)) {
+				return new Error('Bitte gültige Telefonnummer angeben');
+			}
+			return true;
+		},
+		trigger: ['input', 'blur']
+	},
 };
 
 
@@ -134,6 +145,7 @@ const submitBooking = async function () {
 			firstName: booking.value.firstName,
 			lastName: booking.value.lastName,
 			email: booking.value.email,
+			phone: booking.value.phone,
 			comment: booking.value.comment,
 
 			timezone: booking.value.timezone,
@@ -242,6 +254,9 @@ const submitBooking = async function () {
 					<n-form-item item path="email" label="E-Mail">
 						<n-input v-model:value="booking.email" placeholder="E-Mail ..." />
 					</n-form-item>
+					<n-form-item item path="phone" label="Telefon">
+						<n-input v-model:value="booking.phone" placeholder="Telefon ..." />
+					</n-form-item>
 
 					<n-form-item v-if="appointment.canComment" item path="comment" label="Anmerkung">
 						<n-input type="textarea" v-model:value="booking.comment" placeholder="Anmerkung ..." />
@@ -282,6 +297,10 @@ const submitBooking = async function () {
 							<td>E-Mail</td>
 							<td>{{ booking.email }}</td>
 						</tr>
+						<tr v-if="booking.phone.length > 0">
+							<td>Telefon</td>
+							<td>{{ booking.phone }}</td>
+						</tr>
 						<tr>
 							<td>Termin</td>
 							<td>{{ dayjs.utc(chosenSlot.start).local().format('dddd, DD.MM.YYYY') }}</td>
@@ -318,7 +337,7 @@ const submitBooking = async function () {
 			<n-divider />
 
 			<n-space justify="space-between">
-				<n-text depth="3">Datenschutz &mdash; Impressum</n-text>
+				<n-text depth="3"></n-text>
 				<n-text depth="3">
 					Realisiert durch
 					<n-a href="https://github.com/mkuhlmann/MAppointment" target="_blank">MAppointment</n-a>

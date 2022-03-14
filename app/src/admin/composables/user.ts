@@ -1,9 +1,12 @@
 import { ref } from 'vue';
 import { useApi } from '@/shared/composables/api';
 
-type User = {
+export type User = {
 	id: string;
 	username: string;
+	email: string;
+	password: string;
+	passwordConfirmation: string;
 };
 
 const { $fetch } = useApi();

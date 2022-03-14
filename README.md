@@ -29,6 +29,13 @@ services:
       - DB_USER=mappointment
       - DB_PASSWORD=mappointment
       - JWT_SECRET=CHANGE_ME
+      - ENVIRONMENT=production
+      - BASE_URL=http://localhost:3000
+      - SMTP_HOST=smtp.1und1.de
+      - SMTP_SECURE=ssl
+      - SMTP_PORT=465
+      - SMTP_USER=mkuhlmann-org@online.de
+      - SMTP_PASSWORD=zXT82lZBc1B0RnVOwMWM
 ```
 
 ### Manually

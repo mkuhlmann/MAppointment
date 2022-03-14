@@ -10,6 +10,7 @@ import { useDark, useToggle } from '@vueuse/core';
 import DashboardIcon from '@vicons/carbon/Dashboard';
 import CalendarIcon from '@vicons/carbon/Calendar';
 import LogoutIcon from '@vicons/carbon/Logout';
+import UserIcon from '@vicons/carbon/User';
 import MoonIcon from '@vicons/carbon/Moon';
 import SunIcon from '@vicons/carbon/Sun';
 
@@ -54,6 +55,11 @@ const menuOptions = [
 		label: () => renderMenuLabel('Veranstaltungen', '/appointments'),
 		key: 'Events',
 		icon: renderIcon(CalendarIcon)
+	},
+	{
+		label: () => renderMenuLabel('Konto', '/account'),
+		key: 'Users',
+		icon: renderIcon(UserIcon)
 	}
 ];
 

@@ -36,7 +36,7 @@ const bookingsColumns = [
 		key: 'email'
 	},
 	{
-		title: 'Buchungszeit',
+		title: 'Buchungszeit (UTC)',
 		key: 'createdAt'
 	}
 ] as DataTableColumns;

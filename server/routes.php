@@ -33,6 +33,7 @@ $router->group('/api/v1', function (\League\Route\RouteGroup $route) use ($auth)
 	$route->get('/auth/is-first-login', [AuthController::class, 'isFirstUser']);
 	$route->post('/auth/login', [AuthController::class, 'login']);
 	$route->get('/auth/user', [AuthController::class, 'getUser'])->middleware($auth);
+	$route->put('/auth/user', [AuthController::class, 'updateUser'])->middleware($auth);
 
 	// /appointments routes
 	$route->get('/appointments', [AppointmentController::class, 'getAppointments'])->middleware($auth);

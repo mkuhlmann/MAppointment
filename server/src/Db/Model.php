@@ -54,6 +54,11 @@ class Model implements \ArrayAccess, \JsonSerializable
 		$this->fill($attributes);
 	}
 
+	public function attributesExcept($keys): array
+	{
+		return array_except($this->attributes, $keys);
+	}
+
 	public function jsonSerialize(): mixed { 
 		return $this->attributes;
 	}

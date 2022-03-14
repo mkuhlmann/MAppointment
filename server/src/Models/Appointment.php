@@ -9,6 +9,7 @@ use App\Db\Model;
  * @property int $id
  * @property string $name
  * @property bool $requireMailValidation
+ * @property bool $requirePhoneNumber
  * 
  * @property string $mailSender;
  * @property string $mailSenderName;

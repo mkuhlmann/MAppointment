@@ -17,7 +17,7 @@ const columns: DataTableColumns = [
 	},
 
 	{
-		title: 'Letzte Änderung',
+		title: 'Letzte Änderung (UTC)',
 		key: 'updatedAt'
 	},
 

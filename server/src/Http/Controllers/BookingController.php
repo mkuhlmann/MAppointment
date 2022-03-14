@@ -63,20 +63,8 @@ class BookingController
 	{
 		$body = $request->getParsedBody();
 
-		$validator = new Validator();
-
-		$validation = $validator->validate($body, [
-			'appointmentId' => 'required',
-			'slotId' => 'required',
-			'firstName' => 'required',
-			'lastName' => 'required',
-			'email' => 'required|email',
-			'timezone' => 'required',
-			'language' => 'required'
-		]);
-
-		if ($validation->fails()) {
-			return new JsonResponse(['errors' => $validation->errors()->all(), 'error' => 'Validation failed'], 400);
+		if(!isset($body['appointmentId']) || !isset($body['slotId'])) {
+			return new JsonResponse(['error' => 'Missing arguments'], 400);
 		}
 
 		$appointmentId = $body['appointmentId'];
@@ -87,6 +75,28 @@ class BookingController
 
 		if ($appointment === null || $slot === null || $body['appointmentId'] !== $appointment['id']) {
 			return new JsonResponse(['error' => 'Veranstaltung nicht gefunden.'], 404);
+		}
+
+		$validator = new Validator();
+
+		$rules = [
+			'appointmentId' => 'required',
+			'slotId' => 'required',
+			'firstName' => 'required',
+			'lastName' => 'required',
+			'email' => 'required|email',
+			'timezone' => 'required',
+			'language' => 'required'
+		];
+
+		if($appointment->requirePhoneNumber) {
+			$rules['phone'] = 'required';
+		}
+		
+		$validation = $validator->validate($body, $rules);
+
+		if ($validation->fails()) {
+			return new JsonResponse(['errors' => $validation->errors()->all(), 'error' => 'Validation failed'], 400);
 		}
 
 		$appointmentSlotBookings = $this->db->run('SELECT * FROM bookings WHERE slotId = ?', $slotId);
@@ -108,6 +118,7 @@ class BookingController
 				'firstName' => $body['firstName'],
 				'lastName' => $body['lastName'],
 				'email' => $body['email'],
+				'phone' => $body['phone'] ?? null,
 				'comment' => $body['comment'] ?? null,
 				'timezone' => $body['timezone'],
 				'language' => $body['language'],

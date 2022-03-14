@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application;
+use App\Models\User;
 use Firebase\JWT\JWT;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -82,8 +83,38 @@ class AuthController {
 		return new JsonResponse($userCount['count'] == 0);
 	}
 
+	public function updateUser(ServerRequestInterface $request): ResponseInterface
+	{
+		/** @var User $user */
+		$user = $this->app->get('user');
+		$data = $request->getParsedBody();
+
+		if($user->username != $data['username']) {
+			$userCount = $this->db->row('SELECT COUNT(*) as count FROM users WHERE username = ?', $data['username']);
+			if($userCount['count'] > 0) {
+				return new JsonResponse(['error' => 'username already taken']);
+			}
+			$user->username = $data['username'];
+		}
+
+		if(isset($data['password'])) {
+			if($data['password'] === $data['passwordConfirmation']) {
+				$user->password = password_hash($data['password'], PASSWORD_DEFAULT);
+			} else {
+				return new JsonResponse(['error' => 'passwords do not match']);
+			}
+		}
+
+		$user->email = $data['email'];
+		$user->save();
+
+		return new JsonResponse($user);
+	}
+
 	public function getUser(ServerRequestInterface $request): ResponseInterface
 	{
-		return new JsonResponse($this->app->get('user'));
+		/** @var User $user */
+		$user = $this->app->get('user');
+		return new JsonResponse($user->attributesExcept(['password']));
 	}
 }

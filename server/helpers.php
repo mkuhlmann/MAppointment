@@ -34,3 +34,19 @@ function tzdate(string $format, string|int $timestamp = null, string $timezone =
 	date_default_timezone_set('UTC');
 	return $time;
 }
+
+/**
+ * Get all of the given array except for a specified array of keys.
+ *
+ * @param  array  $array
+ * @param  array|string  $keys
+ *
+ * @return array
+ */
+function array_except(array $array, array$keys): array
+{
+	foreach($keys as $key) {
+		unset($array[$key]);
+	}
+	return $array;
+}

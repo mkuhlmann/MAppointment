@@ -64,15 +64,15 @@ const bookingsColumns = [
 		key: 'email'
 	},
 	{
-		title: 'Buchungszeit',
+		title: 'Buchungszeit (UTC)',
 		key: 'createdAt'
 	},
 	{
-		title: 'E-Mail versandt',
+		title: 'E-Mail versandt (UTC)',
 		key: 'mailSentAt'
 	},
 	{
-		title: 'E-Mail bestätigt',
+		title: 'E-Mail bestätigt (UTC)',
 		key: 'confirmedAt'
 	},
 	{
