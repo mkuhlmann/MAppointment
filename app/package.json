@@ -26,7 +26,7 @@
     "vue-cal": "^4.2.0",
     "vue-chart-3": "^3.1.4",
     "vue-router": "^4.0.14",
-    "vue-tsc": "^0.33.2",
+    "vue-tsc": "^0.32.1",
     "windicss": "^3.5.1",		
     "marked": "^4.0.12"
   },
