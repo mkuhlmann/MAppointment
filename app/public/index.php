@@ -1,1 +1,1 @@
-<?php include '../bootstrap.php';
+<?php include '../web.php';
