@@ -9,7 +9,6 @@ import { useDark, useToggle } from '@vueuse/core';
 
 import DashboardIcon from '@vicons/carbon/Dashboard';
 import CalendarIcon from '@vicons/carbon/Calendar';
-import UserIcon from '@vicons/carbon/User';
 import LogoutIcon from '@vicons/carbon/Logout';
 import MoonIcon from '@vicons/carbon/Moon';
 import SunIcon from '@vicons/carbon/Sun';
@@ -92,7 +91,7 @@ const menuOptions = [
 				</n-layout-header>
 				<n-layout has-sider position="absolute" style="top: 64px;">
 					<n-layout-sider
-						v-show="route.path != '/login'"
+						v-if="route.path != '/login'"
 						bordered
 						collapse-mode="width"
 						:collapsed-width="64"

@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { NIcon, NButton, NDataTable, DataTableColumns, NH2, useMessage, NModal } from 'naive-ui';
+import { NIcon, NButton, NDataTable, DataTableColumns, NInput, NSwitch, useMessage, NModal } from 'naive-ui';
 import { ref, h } from 'vue';
 import DocumentDownloadIcon from '@vicons/carbon/DocumentDownload';
 import { Slot, Booking } from '@/types';
 import { useApi } from '@/shared/composables/api';
 
 import BookingModal from './Booking.vue';
+import { watchDebounced } from '@vueuse/core';
 
 
 const message = useMessage();
@@ -24,14 +25,26 @@ const emits = defineEmits<{
 const api = useApi();
 
 const bookings = ref<(Partial<Slot> & Booking)[]>([]);
+const filter = ref({
+	onlyUpcoming: false,
+	q: ''
+});
 
 const fetchBookings = async () => {
+	let query = new URLSearchParams({
+		q: filter.value.q,
+		onlyUpcoming: filter.value.onlyUpcoming ? '1' : '0'
+	}).toString();
 	if(props.appointmentId) {
-		bookings.value = await api.$fetch('/api/v1/appointments/' + props.appointmentId + '/bookings');
+		bookings.value = await api.$fetch('/api/v1/appointments/' + props.appointmentId + '/bookings?' + query);
 	} else if(props.slotId) {
-		bookings.value = await api.$fetch('/api/v1/slots/' + props.slotId + '/bookings');
+		bookings.value = await api.$fetch('/api/v1/slots/' + props.slotId + '/bookings?' + query);
 	}
 };
+
+watchDebounced(filter, () => {
+	fetchBookings().then();
+}, { debounce: 500, deep: true });
 
 const bookingsColumns = [
 	{
@@ -121,14 +134,7 @@ const modalClose = function () {
 </script>
 
 <template>
-
-	<n-modal :show="modalBooking != null" :mask-closable="true">
-		<div class="w-1/2">
-			<BookingModal v-if="modalBooking != null" v-model="modalBooking" @close="modalClose" />
-		</div>
-	</n-modal>
-
-	<div class="mb-5">
+	<div class="flex gap-5 items-center">
 		<n-button type="info" @click="downloadCsv">
 			<template #icon>
 				<n-icon>
@@ -137,6 +143,18 @@ const modalClose = function () {
 			</template>
 			.CSV
 		</n-button>
+		<n-input class="flex-1" placeholder="Filtern ..." v-model:value="filter.q" />		
+		<n-switch  v-model:value="filter.onlyUpcoming" /> <label>Nur zunkünftige Buchungen anzeigen</label>
+	</div>
+
+	<n-modal :show="modalBooking != null" :mask-closable="true">
+		<div class="w-1/2">
+			<BookingModal v-if="modalBooking != null" v-model="modalBooking" @close="modalClose" />
+		</div>
+	</n-modal>
+
+	<div class="mb-5">
+		
 	</div>
 
 	<n-data-table :columns="bookingsColumns" :data="bookings" :pagination="false" />

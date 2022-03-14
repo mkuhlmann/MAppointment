@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Db\QueryBuilder;
 use App\Helper;
 use App\Http\ResourceNotFoundJsonResponse;
+use App\Models\Booking;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -21,7 +23,10 @@ class SlotController
 	/** Admin Routes */
 	public function getBookings(ServerRequestInterface $request, array $params): ResponseInterface
 	{
-		$appointments = $this->db->run('SELECT bookings.*, slots.start, slots.end FROM bookings LEFT JOIN slots ON bookings.slotId = slots.id WHERE slots.id = ?', $params['id']);
+		$query = QueryBuilder::open()
+			->with('slots.id = ?', $params['id']);
+		$query = Booking::getSqlFilterFromRequest($request, $query);
+		$appointments = $this->db->run('SELECT bookings.*, slots.start, slots.end FROM bookings LEFT JOIN slots ON bookings.slotId = slots.id WHERE ' . $query, ...$query->values());
 		return new JsonResponse($appointments);
 	}
 

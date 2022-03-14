@@ -32,3 +32,16 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: mkuhlmann/mappointment:latest
+
+	deploy-staging:
+		needs:
+		  - docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Caprover Using GitHub Actions
+				uses: dankore/github-to-caprover@v.1.0.6
+				with:
+					server: '${{ secrets.CAPROVER_URL }}'
+					password: '${{ secrets.CAPROVER_PASSWORD }}'
+					appName: '${{ secrets.CAPROVER_APP }}'
+					image: 'mkuhlmann/mappointment:latest'

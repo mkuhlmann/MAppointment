@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Db\Model;
+use App\Db\QueryBuilder;
 use App\Models\Appointment;
 use App\Models\Slot;
 use PHPMailer\PHPMailer\PHPMailer;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Booking Model
@@ -170,5 +172,26 @@ class Booking extends Model
 		$this->slot->save();
 
 		parent::delete();
+	}
+	
+	public static function getSqlFilterFromRequest(ServerRequestInterface $request, QueryBuilder $query): QueryBuilder
+	{
+		$q = $request->getQueryParams();
+
+		if(isset($q['q']) && !empty(trim($q['q']))) {
+			$q['query'] = '%' . db()->escapeLikeValue(trim($q['q'])) . '%';
+			$query = $query
+				->andGroup()
+					->with('firstName LIKE ?', $q['q'])
+					->orWith('lastName LIKE ?', $q['q'])
+					->orWith('email LIKE ?', $q['q'])
+					->endGroup();
+		}
+
+		if(isset($q['onlyUpcoming']) && $q['onlyUpcoming'] == '1') {
+			$query = $query->andWith('slots.start > ?', \dbdate());
+		}
+
+		return $query;
 	}
 }

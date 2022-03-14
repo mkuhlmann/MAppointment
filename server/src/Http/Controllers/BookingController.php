@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Db\QueryBuilder;
 use App\Http\ResourceNotFoundJsonResponse;
 use App\Models\Appointment;
 use App\Models\Booking;
