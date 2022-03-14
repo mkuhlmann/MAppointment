@@ -1,7 +1,7 @@
 FROM node:alpine as build-stage
 COPY ./app /app/app
 WORKDIR /app/app
-RUN npm ci
+RUN npm install
 RUN npm run build
 
 FROM alpine:3.15 as production-stage
