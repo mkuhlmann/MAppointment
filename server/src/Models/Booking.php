@@ -179,7 +179,7 @@ class Booking extends Model
 		$q = $request->getQueryParams();
 
 		if(isset($q['q']) && !empty(trim($q['q']))) {
-			$q['query'] = '%' . db()->escapeLikeValue(trim($q['q'])) . '%';
+			$q['q'] = '%' . db()->escapeLikeValue(trim($q['q'])) . '%';
 			$query = $query
 				->andGroup()
 					->with('firstName LIKE ?', $q['q'])

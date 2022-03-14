@@ -15,7 +15,7 @@
     "@vue/compiler-sfc": "^3.2.31",
     "@vueuse/core": "^8.0.1",
     "chartjs-adapter-dayjs-3": "^1.2.3",
-    "dayjs": "^1.10.8",
+    "dayjs": "^1.11.0",
     "naive-ui": "^2.26.4",
     "typescript": "^4.6.2",
     "v-calendar": "^3.0.0-alpha.8",
@@ -26,7 +26,7 @@
     "vue-cal": "^4.2.0",
     "vue-chart-3": "^3.1.4",
     "vue-router": "^4.0.14",
-    "vue-tsc": "^0.32.1",
+    "vue-tsc": "^0.33.2",
     "windicss": "^3.5.1",		
     "marked": "^4.0.12"
   },

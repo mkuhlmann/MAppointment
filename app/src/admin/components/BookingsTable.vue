@@ -144,7 +144,7 @@ const modalClose = function () {
 			.CSV
 		</n-button>
 		<n-input class="flex-1" placeholder="Filtern ..." v-model:value="filter.q" />		
-		<n-switch  v-model:value="filter.onlyUpcoming" /> <label>Nur zunkünftige Buchungen anzeigen</label>
+		<n-switch  v-model:value="filter.onlyUpcoming" /> <label>Nur zukünfttige Buchungen anzeigen</label>
 	</div>
 
 	<n-modal :show="modalBooking != null" :mask-closable="true">
