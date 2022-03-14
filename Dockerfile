@@ -1,5 +1,5 @@
 FROM node:alpine as build-stage
-COPY ./app /app/app
+COPY ./ /app
 WORKDIR /app
 RUN npm install
 RUN npm run build
